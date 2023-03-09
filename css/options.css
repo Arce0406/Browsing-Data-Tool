@@ -1,0 +1,27 @@
+html,
+body {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}
+
+body {
+  /* display: flex;
+    justify-content: center;
+    align-items: center; */
+  padding: 5% 5% 0 5%;
+}
+
+/*
+    tab 
+*/
+.menu.menu-list li a {
+}
+
+.menu-page {
+  display: none;
+}
+
+.menu-page.is-active {
+  display: block;
+}
