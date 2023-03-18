@@ -1,26 +1,20 @@
-(function () {
+import * as MenuAPI from "./scripts/contextMenu.js";
 
-
-  function g(tabId, stream) {
-    const f = {};
-    const audioCtx = new window.AudioContext();
-    const m = audioCtx.createMediaStreamSource(stream);
-    const g = audioCtx.createGain();
-    m.connect(g);
-    g.connect(audioCtx.destination);
-    (f[tabId] = f[tabId] || {}),
-      (f[tabId]["audioContext"] = d),
-      (f[tabId]["gainNode"] = g);
+/**
+ * 監聽前台指令
+ */
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if (request.message === "setNotify") {
+    // NotifyAPI.Permission();
+    NotifyAPI.normalNotification(
+      request.notification.title,
+      request.notification.header,
+      request.notification.subheader
+    );
+    sendResponse(true);
+    return true;
   }
-
-  function changeVolume(tabId, volumeValue) {
-    f[tabId]["gainNode"].gain.value = volumeValue / 100;
-  }
-
-  chrome.tabCapture.capture({ audio: true, video: false }, (b) => {
-    chrome.runtime.lastError
-      ? console.error(chrome.runtime.lastError)
-      : (g(a.tabId, b),
-        changeVolume(a.tabId, a.volumeValue));
-  });
 });
+
+MenuAPI.createScreenShotButton();
+MenuAPI.createYoutubeTabGroup();
