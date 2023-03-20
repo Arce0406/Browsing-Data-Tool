@@ -9,10 +9,15 @@
         "tabCapture",
         "activeTab",
         "tabs",
-        "scripting",
-        "storage",
+        "scripting",        
         "contextMenus",
-        "tabGroups"
+        "tabGroups",
+        "commands","storage","unlimitedStorage","downloads"
+    ],
+    "host_permissions": [
+        "*://*.youtube.com/*",
+        "*://*.twitter.com/*",
+        "*://*.vsingerintro.com/*"
     ],
     "options_ui": {
         "page": "./views/options.html",
@@ -23,7 +28,7 @@
         "type": "module"
     },
     "action": {
-        "default_title": "",
+        "default_title": "Browsing Data Tool",
         "default_icon": {
             "16": "/images/16.png",
             "32": "/images/32.png",
@@ -36,5 +41,13 @@
         "32": "/images/32.png",
         "48": "/images/48.png",
         "128": "/images/128.png"
+    },
+    "commands": {
+        "youtube-screen-shot": {
+            "suggested_key": {
+                "default": "Ctrl+Up"
+            },
+            "description": "Screenshot current view on Youtube page."
+        }
     }
 }

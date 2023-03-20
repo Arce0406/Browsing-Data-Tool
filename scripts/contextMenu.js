@@ -1,5 +1,5 @@
 
-const _app_title = "Browsing Data Tool";
+import * as Utils from "./utils.js";
 
 async function createYoutubeTabGroup() {
 
@@ -91,37 +91,15 @@ function createScreenShotButton() {
     });
     chrome.contextMenus.onClicked.addListener((info, tab) => {
         if (info.menuItemId === menu_id) {
-            let link = new URL(info.pageUrl);
-            if (link.hostname === "www.youtube.com" || link.hostname === "youtube.com") {
-                chrome.scripting.executeScript({
-                    target: { tabId: tab.id, allFrames: false },
-                    files: ["./scripts/screenshot_inject.js"],
-                });
-                //
-            } else {
-                normalNotification(
-                    _app_title,
-                    "截圖功能僅能在 Youtube 頁面上執行。",
-                    ""
-                );
+            if (!Utils.isYoutube()) {
+                Utils.normalNotification(Utils._app_title, "截圖功能僅能在 Youtube 頁面上執行。", "");
+                return;
             }
-            // info.pageUrl, link.hostname
+
+            Utils.screenShotInject(tab.id)
         }
     });
 }
 
-async function normalNotification(title, message, submessage) {
-    await chrome.notifications.create(
-        "notification1",
-        {
-            type: "basic",
-            iconUrl: "./images/32.png",
-            title: title,
-            message: message,
-            contextMessage: submessage,
-            priority: 0,
-        }
-    );
-}
 
 export { createYoutubeTabGroup, createScreenShotButton };

@@ -2,10 +2,7 @@
     function send() {
         chrome.runtime.sendMessage(
             {
-                message: "screenShotResult",
-                title: "偵測中...",
-                header: "-",
-                subheader: "yellow",
+                message: "screenShotResult"
             },
             function (response) {
                 if (chrome.runtime.lastError) console.log(chrome.runtime.lastError);
