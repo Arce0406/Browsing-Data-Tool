@@ -12,7 +12,7 @@
         "scripting",        
         "contextMenus",
         "tabGroups",
-        "commands","storage","unlimitedStorage","downloads"
+        "commands","storage","unlimitedStorage","downloads","webNavigation"
     ],
     "host_permissions": [
         "*://*.youtube.com/*",
@@ -45,7 +45,7 @@
     "commands": {
         "youtube-screen-shot": {
             "suggested_key": {
-                "default": "Ctrl+Up"
+                "default": "Ctrl+Down"
             },
             "description": "Screenshot current view on Youtube page."
         }
