@@ -20,7 +20,7 @@ function findYoutubeVideoInfo() {
     const v = document.querySelector(".video-stream.html5-main-video");
     const upload_info = document.querySelector('#top-row > #owner > ytd-video-owner-renderer > #upload-info > #channel-name > #container > #text-container > #text > a');
     return {
-        created: new Date(Date.now()),
+        created: new Date(Date.now()).toISOString().substring(0, 19),
         video: v,
         title: document.querySelector('#title.ytd-watch-metadata > h1').innerText,
         channel: {
@@ -111,12 +111,12 @@ function downloadFrontend(image) {
  */
 async function downloadBackend(file) {
     const response = await chrome.runtime.sendMessage({ message: "download", payload: file });
-    return response();
+    return response;
 }
 
 async function saveToStorage(file) {
     const response = await chrome.runtime.sendMessage({ message: "save", payload: file });
-    return response();
+    return response;
 }
 
 /**
@@ -146,6 +146,7 @@ async function screenshot() {
 
     // Toast
     toastOnScreenShot(info);
+    downloadBackend(info);
 
     return dataURL;
 }

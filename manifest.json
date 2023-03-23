@@ -9,10 +9,15 @@
         "tabCapture",
         "activeTab",
         "tabs",
-        "scripting",        
+        "scripting",
         "contextMenus",
         "tabGroups",
-        "commands","storage","unlimitedStorage","downloads","webNavigation"
+        
+        "commands",
+        "storage",
+        "unlimitedStorage",
+        "downloads",
+        "webNavigation"
     ],
     "host_permissions": [
         "*://*.youtube.com/*",

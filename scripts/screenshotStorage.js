@@ -14,7 +14,7 @@
 //     }]
 // };
 
-import * as FileSysten from "./scripts/fileSystem.js";
+import * as FileSysten from "./fileSystem.js";
 const _key = "youtube_screenshots";
 
 
@@ -40,7 +40,7 @@ async function download(payload) {
     const downloadOptions = {
         "url": payload.dataURL,
         "saveAs": false,
-        "filename": `${payload.created.toISOString()}.png`
+        "filename": `${payload.created.replaceAll(":", "_").replace("Z", "")}.png`
     };
     const downloadId = await chrome.downloads.download(downloadOptions);
     if (!downloadId) console.log(chrome.runtime.lastError);

@@ -1,6 +1,6 @@
-// import * as MenuAPI from "./scripts/contextMenu.js";
+import * as MenuAPI from "./scripts/contextMenu.js";
 import * as Utils from "./scripts/utils.js";
-import * as ScreenshotFiles from "./scripts/screenshotStorage"
+import * as ScreenshotFiles from "./scripts/screenshotStorage.js"
 
 const filter = { url: [{ hostEquals: "www.youtube.com", pathEquals: "/watch" }, { hostEquals: "www.youtube.com", pathEquals: "/live" }] };
 function injectScript(details) { Utils.screenShotInject2(details.tabId); }
@@ -17,14 +17,11 @@ chrome.action.onClicked.addListener(function (tab) {
  */
 chrome.webNavigation.onCompleted.addListener(injectScript, filter);
 chrome.webNavigation.onHistoryStateUpdated.addListener(injectScript, filter);
-// chrome.webNavigation.onDOMContentLoaded.addListener(function(details){console.log('Navigation onDOMContentLoaded', details);})
-// chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) { console.log('tabs.onUpdated', changeInfo.status) });
 
 /**
  * Shortcuts
  */
 chrome.commands.onCommand.addListener(async (command, tab) => {
-  // console.log(`Command: ${command}, Tab: ${tab.title}`);
   if (command === "youtube-screen-shot") {
     if (!Utils.isYoutube(tab.url)) {
       Utils.normalNotification(Utils._app_title, "截圖功能僅能在 Youtube 頁面上執行。", "");
@@ -41,20 +38,18 @@ chrome.commands.onCommand.addListener(async (command, tab) => {
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.message === "setNotify") {
     // NotifyAPI.Permission();
-    NotifyAPI.normalNotification(
-      request.notification.title,
-      request.notification.header,
-      request.notification.subheader
+    NotifyAPI.normalNotification(request.notification.title, request.notification.header, request.notification.subheader
     );
-    sendResponse(true);
-    return true;
-  }
-  else if (request.message === "hello") {
     sendResponse(true);
     return true;
   }
   else if (request.message === "download") {
     ScreenshotFiles.download(request.payload);
+    sendResponse(true);
+    return true;
+  }
+  else if (request.message === "save") {
+    
     sendResponse(true);
     return true;
   }
@@ -65,8 +60,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
  */
 chrome.storage.onChanged.addListener((changes, namespace) => {
   for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
-    console.log(`Storage key "${key}" in namespace "${namespace}" changed.`,
-      `Old value was "${oldValue}", new value is "${newValue}".`);
+    console.log(`Storage key "${key}" in namespace "${namespace}" changed.`, `Old value was "${oldValue}", new value is "${newValue}".`);
   }
 });
 
