@@ -28,14 +28,14 @@ chrome.commands.onCommand.addListener(async (command, tab) => {
       return;
     }
     const response = await chrome.tabs.sendMessage(tab.id, { command: "screenshot" });
-    console.log(response);
+    // console.log(response);
   }
 });
 
 /**
  * Monitor communication
  */
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async(request, sender, sendResponse) => {
   if (request.message === "setNotify") {
     // NotifyAPI.Permission();
     NotifyAPI.normalNotification(request.notification.title, request.notification.header, request.notification.subheader
@@ -44,12 +44,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   }
   else if (request.message === "download") {
-    ScreenshotFiles.download(request.payload);
+    await ScreenshotFiles.download(request.payload);
     sendResponse(true);
     return true;
   }
   else if (request.message === "save") {
-    
+    await ScreenshotFiles.set(request.payload);
+    sendResponse(true);
+    return true;
+  }
+  else if (request.message === "delete") {
+    // console.log("start delete");
+    await ScreenshotFiles.remove(request.payload);
+    // console.log("end delete");
     sendResponse(true);
     return true;
   }

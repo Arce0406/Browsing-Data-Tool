@@ -8,80 +8,115 @@
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <!-- CSS: Bulma -->
-    <link rel="stylesheet" href="../css/bulma.min.css">
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="./css/bulma.min.css">
+    <link rel="stylesheet" href="./css/style.css">
+    <script type="module" src="./js/options.js"></script>
 </head>
 
 <body class="has-background-light">
-    <section class="section container-fluid box has-background-white">
-        <!-- Functional Bar -->
-        <nav class="level">
-            <div class="level-left">
-                <div class="level-item">
-                    <p class="title">Screenshots</p>
-                </div>
-            </div>
-            <div class="level-right">
-                <div class="level-item">
-                    <div class="field has-addons">
-                        <p class="control">
-                            <input class="input" type="text" placeholder="Find a post">
-                        </p>
-                        <p class="control">
-                            <button class="button is-primary">
-                                Search
-                            </button>
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </nav>
-        <progress class="progress is-success" value="30" max="100">30%</progress>
-
-        <!-- Setting -->
-        <div class="block">
-            <div class="field">
-                <label class="label">下載方式</label>
-                <div class="control">
-                    <label class="radio">
-                        <input type="radio" name="1">
-                        自動下載
-                    </label>
-                    <label class="radio">
-                        <input type="radio" name="2">
-                        手動下載
-                    </label>
-                </div>
-            </div>
-            <div class="file has-name">
-                <label class="file-label">
-                    <input class="file-input" type="file" name="resume" webkitdirectory directory>
-                    <span class="file-cta">
-                        <span class="file-icon">
-                            <i class="fas fa-upload"></i>
-                        </span>
-                        <span class="file-label">
-                            Choose a file…
-                        </span>
-                    </span>
-                    <span class="file-name">
-                        Screen Shot 2017-07-29 at 15.54.25.png
-                    </span>
-                </label>
-            </div>
+    <!--  has-background-dark has-background-grey-dark has-text-white -->
+    <main class="section box">
+        <!-- Title -->
+        <div class="content">
+            <p class="title is-4">Screenshots</p>
+            <p id="usage" class="subtitle is-6">0 Mb</p>
         </div>
 
-        <div class="block columns is-multiline">
-            <div class="column is-12">
-                <h4 class="title is-4">2023-01-04</h4>
+        <!-- <progress class="progress is-warning" max="100">0%</progress> -->
+
+        <!-- Functional Bar -->
+        <div class="filter-bar block is-flex">
+            <!-- <div class="control">
+                <div class="select is-fullwidth">
+                    <select id="">
+                        <option>4 shots in 1 row</option>
+                    </select>
+                </div>
+            </div> -->
+
+            <div class="control">
+                <div class="select is-fullwidth">
+                    <select id="select-channel">
+                        <option>Filter by channel name</option>
+                    </select>
+                </div>
             </div>
-            <div class="column is-one-quarter is-relative">
-                <figure class="image is-4by3">
-                    <img src="https://bulma.io/images/placeholders/1280x960.png" alt="Placeholder image">
+
+            <div class="vl"></div>
+            <!--  style="border-right: 1px solid hsla(200, 10%, 50%,100);" -->
+
+            <button class="button is-white">
+                <span class="icon is-small">
+                    <span class="material-symbols-outlined">
+                        sort
+                    </span>
+                </span>
+            </button>
+
+            <button class="button is-white">
+                <span class="icon is-small">
+                    <span class="material-symbols-outlined">
+                        refresh
+                    </span>
+                </span>
+            </button>
+
+            <button class="button is-white">
+                <span class="icon is-small">
+                    <span class="material-symbols-outlined">
+                        download
+                    </span>
+                </span>
+            </button>
+
+            <div class="vl"></div>
+            
+            <button class="button is-white">
+                <span class="icon is-small">
+                    <span class="material-symbols-outlined">
+                        delete
+                    </span>
+                </span>
+            </button>
+
+            <div class="vl"></div>
+
+            <button class="button is-white">
+                <span class="icon is-small">
+                    <!-- <span class="material-symbols-outlined">
+                        light_mode
+                    </span> -->
+                    <span class="material-symbols-outlined">
+                        dark_mode
+                    </span>
+                </span>
+            </button>
+            <button class="button is-white">
+                <span class="icon is-small">
+                    <span class="material-symbols-outlined">
+                        help
+                    </span>
+                </span>
+            </button>
+
+
+        </div>
+
+        <div id="area" class="block columns is-multiline"></div>
+        <div class="block columns is-multiline" style="display: none;">
+            <!-- sample_header -->
+            <div class="sample_header column is-12">
+                <h4 class="title is-4">2023-01-01</h4>
+            </div>
+            <!-- sample_item -->
+            <div class="sample_item screenshot column is-12-mobile is-4-tablet is-3-desktop is-2-fullhd is-relative">
+                <figure class="image">
+                    <img src="#" width="384" height="216">
                 </figure>
-                <div class="is-flex p-5" style="position: absolute;background-color: transparent; bottom: 0; right: 0;width: 100%;">
+                <div class="is-overlay m-3 transition-opacity"></div>
+                <div class="is-flex p-5 preview-button-group transition-opacity">
                     <p class="control is-flex-grow-1">
-                        <button class="button is-danger">
+                        <button class="button is-danger delete-button">
                             <span class="icon is-small">
                                 <span class="material-symbols-outlined">
                                     delete
@@ -90,7 +125,7 @@
                         </button>
                     </p>
                     <p class="control">
-                        <button class="button">
+                        <button class="button dowmload-button">
                             <span class="icon is-small">
                                 <span class="material-symbols-outlined">
                                     download
@@ -99,7 +134,7 @@
                         </button>
                     </p>
                     <p class="control">
-                        <button class="button is-link">
+                        <button class="button is-link preview-button">
                             <span class="icon is-small">
                                 <span class="icon is-small material-symbols-outlined">
                                     open_in_full
@@ -127,7 +162,67 @@
             </ul>
         </nav>
 
-    </section>
+    </main>
+
+    <!-- Image modal -->
+    <div class="modal" id="modal-preview">
+        <div class="modal-background"></div>
+        <div class="modal-content">
+            <p class="image is-16by9">
+                <img id="modal-preview-img" src="#">
+            </p>
+        </div>
+        <button class="modal-close is-large" aria-label="close"></button>
+    </div>
+
+    <!-- Setting Modal -->
+    <div class="modal">
+        <div class="modal-background"></div>
+        <div class="modal-card">
+            <header class="modal-card-head">
+                <p class="modal-card-title">Modal title</p>
+                <button class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+                <!-- Content ... -->
+                <div class="field">
+                    <label class="label">下載方式</label>
+                    <div class="control">
+                        <label class="radio">
+                            <input type="radio" name="1">
+                            自動下載
+                        </label>
+                        <label class="radio">
+                            <input type="radio" name="2">
+                            手動下載
+                        </label>
+                    </div>
+                </div>
+
+                <div class="file has-name">
+                    <label class="file-label">
+                        <input class="file-input" type="file" name="resume" webkitdirectory directory>
+                        <span class="file-cta">
+                            <span class="file-icon">
+                                <i class="fas fa-upload"></i>
+                            </span>
+                            <span class="file-label">
+                                Choose a file…
+                            </span>
+                        </span>
+                        <span class="file-name">
+                            Screen Shot 2017-07-29 at 15.54.25.png
+                        </span>
+                    </label>
+                </div>
+
+            </section>
+            <footer class="modal-card-foot">
+                <button class="button is-success">Save changes</button>
+                <button class="button">Cancel</button>
+            </footer>
+        </div>
+    </div>
 </body>
 
 </html>

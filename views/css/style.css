@@ -1,0 +1,70 @@
+body {
+  height: 100%;
+  width: 100%;
+  padding: 2.5% 5%;
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+}
+
+.preview-button-group {
+  position: absolute;
+  background-color: transparent;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+}
+
+.modal-content {
+  width: 80% !important;
+}
+
+.filter-bar {
+  border-top: 1px solid #e6e5e5;
+  border-bottom: 1px solid #e6e5e5;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.filter-bar > :not(:last-child) {
+  margin-right: 10px;
+}
+
+.vl {
+  background-color: #e6e5e5;
+  border: none;
+  display: block;
+  width: 2px;
+  margin: 0 20px !important;
+}
+
+.title,
+.subtitle {
+  color: inherit !important;
+}
+
+.transition-opacity {
+  transition: opacity 120ms cubic-bezier(0.95, 0.05, 0.795, 0.035) 50ms;
+}
+
+.screenshot > .is-overlay {
+  background-color: black;
+  opacity: 0;
+}
+
+.screenshot > .preview-button-group {
+  opacity: 0;
+}
+
+.screenshot > .preview-button-group > :not(:first-child){
+  padding-left: 10px;
+}
+
+.screenshot:hover > .is-overlay {
+  opacity: 0.5;
+}
+
+.screenshot:hover > .preview-button-group {
+  opacity: 1;
+}

@@ -20,16 +20,16 @@ function findYoutubeVideoInfo() {
     const v = document.querySelector(".video-stream.html5-main-video");
     const upload_info = document.querySelector('#top-row > #owner > ytd-video-owner-renderer > #upload-info > #channel-name > #container > #text-container > #text > a');
     return {
-        created: new Date(Date.now()).toISOString().substring(0, 19),
-        video: v,
-        title: document.querySelector('#title.ytd-watch-metadata > h1').innerText,
-        channel: {
-            name: upload_info.textContent,
-            url: upload_info.getAttribute("href")
+        "created": new Date(Date.now()).toISOString(),
+        "video": v,
+        "title": document.querySelector('#title.ytd-watch-metadata > h1').innerText,
+        "channel": {
+            "name": upload_info.textContent,
+            "url": upload_info.getAttribute("href")
         },
-        size: {
-            width: v.videoWidth,
-            height: v.videoHeight
+        "size": {
+            "width": v.videoWidth,
+            "height": v.videoHeight
         },
     };
 }
@@ -72,13 +72,13 @@ function toastElement(image) {
  * Show preview screenshot image
  * @param {*} image 
  */
-function toastOnScreenShot(info) {
+function toastForScreenShot(info) {
     const img = toastElement(info.dataURL);
     document.body.appendChild(img);
     // Animation
     const animate1 = img.animate([{ opacity: 0 }, { opacity: 1 }], { fill: 'forwards', duration: 150 });
     animate1.addEventListener("finish", function () {
-        console.log("animation end");
+        // console.log("animation finish.");
         setTimeout(() => {
             const animate2 = img.animate([{ opacity: 1 }, { opacity: 0 }], { fill: 'forwards', duration: 100 });
             animate2.addEventListener("finish", () => { img.parentNode.removeChild(img); });
@@ -110,17 +110,20 @@ function downloadFrontend(image) {
  * @returns {*} response
  */
 async function downloadBackend(file) {
-    const response = await chrome.runtime.sendMessage({ message: "download", payload: file });
+    delete file.video;
+    const response = await chrome.runtime.sendMessage({ "message": "download", "payload": file });
     return response;
 }
 
 async function saveToStorage(file) {
-    const response = await chrome.runtime.sendMessage({ message: "save", payload: file });
+    // console.log(file);
+    if (file["video"]) delete file.video;
+    const response = await chrome.runtime.sendMessage({ "message": "save", "payload": file });
     return response;
 }
 
 /**
- * 
+ * Excute screenshot process
  * @returns {String?} Image data url
  */
 async function screenshot() {
@@ -145,13 +148,20 @@ async function screenshot() {
     // downloadFrontend(image);
 
     // Toast
-    toastOnScreenShot(info);
-    downloadBackend(info);
+    toastForScreenShot(info);
+
+    // Save
+    saveToStorage(info);
 
     return dataURL;
 }
 
-
+/**
+ * Create button tooltip
+ * @param {String} text 
+ * @param {Boolean} isDisplay 
+ * @returns 
+ */
 function customButtonToolTip(text, isDisplay) {
     const div1 = document.createElement("div");
     div1.setAttribute("aria-live", "polite");
@@ -187,10 +197,12 @@ function customButtonToolTip(text, isDisplay) {
     return div1;
 }
 
+/**
+ * Create button
+ */
 function createTakeVideoScreenshotButton() {
     const _id = "ytb-screenshot-button";
     if (document.getElementById(_id) === null) {
-        const ytpRightControls = document.querySelector("#movie_player .ytp-right-controls");
         const ytbVideoScreenshotButton = document.createElement("button");
         ytbVideoScreenshotButton.className = `${_id} ytp-button ytp-settings-button`;
         ytbVideoScreenshotButton.id = _id;
@@ -200,6 +212,7 @@ function createTakeVideoScreenshotButton() {
         ytbVideoScreenshotButton.setAttribute("aria-pressed", "false");
         ytbVideoScreenshotButton.innerHTML = `<svg height="100%" version="1.1" viewBox="-8 -8 40 40" width="100%" fill-opacity="1"><use class="ytp-svg-shadow" xlink:href="#ytp-id-446"></use><path d="M19 14h-2v3h-3v2h3v3h2v-3h3v-2h-3zM4 19h3v-2H5v-2H3v3a1 1 0 0 0 1 1zM19 4a1 1 0 0 0-1-1h-3v2h2v2h2V4zM5 5h2V3H4a1 1 0 0 0-1 1v3h2V5zM3 9h2v4H3zm14 0h2v3h-2zM9 3h4v2H9zm0 14h3v2H9z" fill="#fff" id="ytp-id-446"/></svg>`;
 
+        const ytpRightControls = document.querySelector("#movie_player .ytp-right-controls");
         ytpRightControls.insertBefore(ytbVideoScreenshotButton, ytpRightControls.childNodes[1]);
 
         const tooltip = customButtonToolTip("截圖 (Ctrl + ↓ )", true);
