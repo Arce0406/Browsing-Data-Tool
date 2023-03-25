@@ -1,4 +1,4 @@
-import * as FileSysten from "../../scripts/fileSystem.js";
+import * as ShotFileSysten from "../../scripts/screenshotStorage.js";
 
 const area = document.getElementById("area");
 const usageP = document.getElementById("usage");
@@ -17,9 +17,9 @@ async function init() {
 }
 
 async function getData() {
-    storageData = await FileSysten.getAll();
-    usageBytes = await FileSysten.usage();
-    console.log(storageData);
+    storageData = await ShotFileSysten.getAll();
+    usageBytes = await ShotFileSysten.usage();
+    console.log(storageData["honeybees_club"]["screenshots"].length);
 }
 
 async function render() {
@@ -99,7 +99,7 @@ function createItem(t) {
 
     // delete
     ce.children[2].children[0].children[0].addEventListener("click", async function (e) {
-        await chrome.runtime.sendMessage({ "message": "delete", "payload": t });
+        await ShotFileSysten.remove(t);
         console.log("delete finish.");
         await init();
     });

@@ -27,8 +27,12 @@ body {
   padding-bottom: 15px;
 }
 
-.filter-bar > :not(:last-child) {
+/* .filter-bar > :not(:last-child):not(.vl) {
   margin-right: 10px;
+} */
+
+.ml-10px {
+  margin-left: 10px;
 }
 
 .vl {
@@ -57,7 +61,7 @@ body {
   opacity: 0;
 }
 
-.screenshot > .preview-button-group > :not(:first-child){
+.screenshot > .preview-button-group > :not(:first-child) {
   padding-left: 10px;
 }
 

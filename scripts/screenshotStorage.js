@@ -13,6 +13,10 @@ const default_user_setting = {
 import * as FileSysten from "./fileSystem.js";
 const _key = "honeybees_club";//"youtube_screenshots";
 
+async function usage(ks) {
+    const result = await FileSysten.usage(ks);
+    return result;
+}
 
 async function set(payload) {
     let orignal_datas = await get(_key);
@@ -35,7 +39,7 @@ async function get(key) {
 }
 
 async function getAll() {
-    const obj = await FileSysten.getAll();
+    const obj = await FileSysten.getAll(null);
     // console.log("All: ", obj);
     return obj;
 }
@@ -68,4 +72,9 @@ async function remove(payload) {
     await FileSysten.set(orignal_datas);
 }
 
-export { set, get, getAll, download, remove }
+async function clear() {
+    const result = await FileSysten.clear();
+    return result;
+}
+
+export { usage, set, get, getAll, download, remove, clear }
