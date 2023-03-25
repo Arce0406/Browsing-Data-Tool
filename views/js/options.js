@@ -14,15 +14,76 @@ async function init() {
     await getData();
     await render();
     channelFilter();
+    buttons();
 }
+
+/**
+ * Screenshot 相關
+ */
 
 async function getData() {
     storageData = await ShotFileSysten.getAll();
     usageBytes = await ShotFileSysten.usage();
-    console.log(storageData["honeybees_club"]["screenshots"].length);
+    // console.log(storageData["honeybees_club"]["screenshots"].length);
 }
 
 async function render() {
+
+    function createHeader(date) {
+        const ce = document.querySelector(".sample_header").cloneNode(true);
+        ce.classList.remove("sample_header");
+        ce.setAttribute("data-datetime", date);
+        ce.style.display = "block";
+        ce.children[0].textContent = date;
+        area.appendChild(ce);
+    }
+
+    function createItem(date, payload) {
+        const ce = document.querySelector(".sample_item").cloneNode(true);
+        // console.log(ce.children);
+        ce.classList.remove("sample_item");
+        ce.setAttribute("data-datetime", date);
+        ce.style.display = "block";
+        ce.children[0].children[0].setAttribute("src", payload.dataURL);
+        ce.setAttribute("data-channel-name", payload.channel.name);
+
+        // delete
+        ce.children[2].children[0].children[0].addEventListener("click", async function (e) {
+            const yes = confirm('確定要刪除嗎？');
+            if (!yes) return;
+
+            await ShotFileSysten.remove(payload);
+            console.log("delete finish.");
+            await init();
+        });
+        // download
+        ce.children[2].children[1].children[0].addEventListener("click", async function (e) {
+            await chrome.runtime.sendMessage({ "message": "download", "payload": payload });
+        });
+        // preview
+        ce.children[2].children[2].children[0].addEventListener("click", function (e) {
+            modal_preview_img.setAttribute("src", payload.dataURL);
+            modal_preview.classList.toggle("is-active");
+        });
+        // console.log(ce.children[1].children[2].children[0]);
+
+        area.appendChild(ce);
+    }
+
+    function modals() {
+        function closeModal($el) {
+            $el.classList.remove('is-active');
+        }
+
+        // Add a click event on various child elements to close the parent modal
+        (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .button') || []).forEach(($close) => {
+            const $target = $close.closest('.modal');
+
+            $close.addEventListener('click', () => {
+                closeModal($target);
+            });
+        });
+    }
 
     while (area.firstChild) {
         area.removeChild(area.lastChild);
@@ -46,17 +107,36 @@ async function render() {
     // 更新使用量
     usageP.textContent = `${storageData["honeybees_club"]["screenshots"].length} Shots．${Math.round(usageBytes / 1024 / 1024)} Megabyte (MB)`;
 
-    const keys = Object.keys(screenshots_by_date);
-    for (let x = 0; x < keys.length; x++) {
-        const key = keys[x];
-        createHeader(key);
-        for (let y = 0; y < screenshots_by_date[key].length; y++) {
-            const item = screenshots_by_date[key][y];
-            createItem(item);
+    const dateStrings = Object.keys(screenshots_by_date);
+    for (let x = 0; x < dateStrings.length; x++) {
+        const dateStr = dateStrings[x];
+        createHeader(dateStr);
+        for (let y = 0; y < screenshots_by_date[dateStr].length; y++) {
+            const item = screenshots_by_date[dateStr][y];
+            createItem(dateStr, item);
         }
     }
     // console.log('render finish.');
     modals();
+}
+
+
+/**
+ * Filter
+ */
+
+function buttons() {
+    document.getElementById("btn-mode").addEventListener("click", function (e) {
+        if (document.body.classList.contains("dark-mode")) {
+            document.body.classList.remove("dark-mode");
+            document.body.classList.add("light-mode")
+        }
+        else {
+            // if (document.body.classList.contains("light-mode")) 
+            document.body.classList.remove("light-mode");
+            document.body.classList.add("dark-mode")
+        }
+    });
 }
 
 function channelFilter() {
@@ -81,55 +161,3 @@ function channelFilter() {
     // console.log(names);
 }
 
-function createHeader(t) {
-    const ce = document.querySelector(".sample_header").cloneNode(true);
-    ce.classList.remove("sample_header");
-    ce.style.display = "block";
-    ce.children[0].textContent = t;
-    area.appendChild(ce);
-}
-
-function createItem(t) {
-    const ce = document.querySelector(".sample_item").cloneNode(true);
-    // console.log(ce.children);
-    ce.classList.remove("sample_item");
-    ce.style.display = "block";
-    ce.children[0].children[0].setAttribute("src", t.dataURL);
-    ce.setAttribute("data-channel-name", t.channel.name);
-
-    // delete
-    ce.children[2].children[0].children[0].addEventListener("click", async function (e) {
-        await ShotFileSysten.remove(t);
-        console.log("delete finish.");
-        await init();
-    });
-    // download
-    ce.children[2].children[1].children[0].addEventListener("click", async function (e) {
-        await chrome.runtime.sendMessage({ "message": "download", "payload": t });
-    });
-    // preview
-    ce.children[2].children[2].children[0].addEventListener("click", function (e) {
-        modal_preview_img.setAttribute("src", t.dataURL);
-        modal_preview.classList.toggle("is-active");
-    });
-    // console.log(ce.children[1].children[2].children[0]);
-
-    area.appendChild(ce);
-}
-
-function modals() {
-    // console.log('modals.');
-
-    function closeModal($el) {
-        $el.classList.remove('is-active');
-    }
-
-    // Add a click event on various child elements to close the parent modal
-    (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .button') || []).forEach(($close) => {
-        const $target = $close.closest('.modal');
-
-        $close.addEventListener('click', () => {
-            closeModal($target);
-        });
-    });
-}

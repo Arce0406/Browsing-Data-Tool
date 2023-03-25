@@ -13,9 +13,9 @@
     <script type="module" src="./js/options.js"></script>
 </head>
 
-<body class="has-background-light">
+<body class="dark-mode">
     <!--  has-background-dark has-background-grey-dark has-text-white -->
-    <main class="section box">
+    <main>
         <!-- Title -->
         <div class="content">
             <p class="title is-4">Screenshots</p>
@@ -45,7 +45,7 @@
             <div class="vl"></div>
             <!--  style="border-right: 1px solid hsla(200, 10%, 50%,100);" -->
 
-            <button class="button is-white">
+            <button class="button">
                 <span class="icon is-small">
                     <span class="material-symbols-outlined">
                         sort
@@ -53,7 +53,7 @@
                 </span>
             </button>
 
-            <button class="button is-white ml-10px">
+            <button class="button ml-10px">
                 <span class="icon is-small">
                     <span class="material-symbols-outlined">
                         refresh
@@ -61,7 +61,7 @@
                 </span>
             </button>
 
-            <button class="button is-white ml-10px">
+            <button class="button ml-10px">
                 <span class="icon is-small">
                     <span class="material-symbols-outlined">
                         download
@@ -71,7 +71,7 @@
 
             <div class="vl"></div>
             
-            <button class="button is-white">
+            <button class="button">
                 <span class="icon is-small">
                     <span class="material-symbols-outlined">
                         delete
@@ -81,7 +81,7 @@
 
             <div class="vl"></div>
 
-            <button class="button is-white">
+            <button class="button" id="btn-mode">
                 <span class="icon is-small">
                     <!-- <span class="material-symbols-outlined">
                         light_mode
@@ -91,7 +91,7 @@
                     </span>
                 </span>
             </button>
-            <button class="button is-white ml-10px">
+            <button class="button ml-10px">
                 <span class="icon is-small">
                     <span class="material-symbols-outlined">
                         help
@@ -105,7 +105,7 @@
         <div id="area" class="block columns is-multiline"></div>
         <div class="block columns is-multiline" style="display: none;">
             <!-- sample_header -->
-            <div class="sample_header column is-12">
+            <div class="sample_header screenshot-header column is-12">
                 <h4 class="title is-4">2023-01-01</h4>
             </div>
             <!-- sample_item -->
@@ -146,7 +146,7 @@
             </div>
         </div>
 
-        <nav class="pagination" role="navigation" aria-label="pagination">
+        <!-- <nav class="pagination" role="navigation" aria-label="pagination">
             <a class="pagination-previous" title="This is the first page" disabled="">Previous</a>
             <a class="pagination-next">Next page</a>
             <ul class="pagination-list">
@@ -160,7 +160,7 @@
                     <a class="pagination-link" aria-label="Goto page 3">3</a>
                 </li>
             </ul>
-        </nav>
+        </nav> -->
 
     </main>
 
