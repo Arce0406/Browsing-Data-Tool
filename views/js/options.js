@@ -10,7 +10,8 @@ let storageData, usageBytes;
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
-    console.log("init...");
+    // console.log("init...");
+    // if (window.Worker) {} 
     await getData();
     await render();
     channelFilter();
@@ -24,10 +25,13 @@ async function init() {
 async function getData() {
     storageData = await ShotFileSysten.getAll();
     usageBytes = await ShotFileSysten.usage();
-    // console.log(storageData["honeybees_club"]["screenshots"].length);
+    storageData["honeybees_club"]["screenshots"] = storageData["honeybees_club"]["screenshots"].reverse();
+    // console.log(storageData["honeybees_club"]["screenshots"]);
 }
 
 async function render() {
+
+    const fragment = document.createDocumentFragment();
 
     function createHeader(date) {
         const ce = document.querySelector(".sample_header").cloneNode(true);
@@ -35,7 +39,7 @@ async function render() {
         ce.setAttribute("data-datetime", date);
         ce.style.display = "block";
         ce.children[0].textContent = date;
-        area.appendChild(ce);
+        fragment.appendChild(ce);
     }
 
     function createItem(date, payload) {
@@ -48,26 +52,34 @@ async function render() {
         ce.setAttribute("data-channel-name", payload.channel.name);
 
         // delete
-        ce.children[2].children[0].children[0].addEventListener("click", async function (e) {
+        // ce.children[2].children[0].children[0]
+        ce.querySelector(".delete-button").addEventListener("click", async function (e) {
             const yes = confirm('確定要刪除嗎？');
             if (!yes) return;
-
             await ShotFileSysten.remove(payload);
-            console.log("delete finish.");
             await init();
         });
+
+        // copy
+        // ce.children[2].children[1].children[0]
+        ce.querySelector(".copy-button").addEventListener("click", async function (e) {
+            await chrome.runtime.sendMessage({ "message": "download", "payload": payload });
+        });
+
         // download
-        ce.children[2].children[1].children[0].addEventListener("click", async function (e) {
+        // ce.children[2].children[2].children[0]
+        ce.querySelector(".dowmload-button").addEventListener("click", async function (e) {
             await chrome.runtime.sendMessage({ "message": "download", "payload": payload });
         });
         // preview
-        ce.children[2].children[2].children[0].addEventListener("click", function (e) {
+        // ce.children[2].children[3].children[0]
+        ce.querySelector(".preview-button").addEventListener("click", function (e) {
             modal_preview_img.setAttribute("src", payload.dataURL);
             modal_preview.classList.toggle("is-active");
         });
         // console.log(ce.children[1].children[2].children[0]);
 
-        area.appendChild(ce);
+        fragment.appendChild(ce);
     }
 
     function modals() {
@@ -105,7 +117,7 @@ async function render() {
     }, {});
 
     // 更新使用量
-    usageP.textContent = `${storageData["honeybees_club"]["screenshots"].length} Shots．${Math.round(usageBytes / 1024 / 1024)} Megabyte (MB)`;
+    usageP.textContent = `${storageData["honeybees_club"]["screenshots"].length} Shots．${Math.round(usageBytes / 1024 / 1024)} MB`;
 
     const dateStrings = Object.keys(screenshots_by_date);
     for (let x = 0; x < dateStrings.length; x++) {
@@ -116,6 +128,8 @@ async function render() {
             createItem(dateStr, item);
         }
     }
+    console.log("append start...");
+    area.appendChild(fragment);
     // console.log('render finish.');
     modals();
 }
