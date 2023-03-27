@@ -10,12 +10,13 @@ let storageData, usageBytes;
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
-    // console.log("init...");
+    console.log("init...", new Date());
     // if (window.Worker) {} 
     await getData();
     await render();
     channelFilter();
     buttons();
+    console.log("done.", new Date());
 }
 
 /**
@@ -33,12 +34,39 @@ async function render() {
 
     const fragment = document.createDocumentFragment();
 
+    function dataURLtoBlob(dataurl) {
+        var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+        while(n--){
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new Blob([u8arr], {type:mime});
+    }
+
+    function dataURItoBlob(dataURI, mimeType) {
+        // convert base64/URLEncoded data component to raw binary data held in a string
+        const byteString = atob(dataURI.split(',')[1]);
+        const mimeString = mimeType ? mimeType : 'image/png'; //dataURI.split(',')[0].split(':')[1].split(';')[0];
+        // console.log(mimeString)
+        // write the bytes of the string to a typed array
+        const len = byteString.length;
+        const ia = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+        // let ia = Uint8Array.from(Array.from(byteString).map(letter => letter.charCodeAt(0)));
+
+        return (new Blob([ia], { type: mimeString }));
+    }
+
     function createHeader(date) {
         const ce = document.querySelector(".sample_header").cloneNode(true);
         ce.classList.remove("sample_header");
         ce.setAttribute("data-datetime", date);
         ce.style.display = "block";
-        ce.children[0].textContent = date;
+        // console.log(ce.firstChild.nextSibling, ce.children[0])
+        // ce.children[0].textContent = date;
+        ce.firstChild.nextSibling.textContent = date;
         fragment.appendChild(ce);
     }
 
@@ -48,11 +76,15 @@ async function render() {
         ce.classList.remove("sample_item");
         ce.setAttribute("data-datetime", date);
         ce.style.display = "block";
-        ce.children[0].children[0].setAttribute("src", payload.dataURL);
+        // console.log(ce.firstChild.nextSibling.firstChild.nextSibling, ce.children[0])
+        // ce.children[0].children[0].setAttribute("src", payload.dataURL);
+        // ce.firstChild.nextSibling.firstChild.nextSibling.setAttribute("src", payload.dataURL);
+        ce.firstChild.nextSibling.firstChild.nextSibling.setAttribute("src", window.URL.createObjectURL(dataURLtoBlob(payload.dataURL, payload.mimeType)));
         ce.setAttribute("data-channel-name", payload.channel.name);
 
         // delete
         // ce.children[2].children[0].children[0]
+        // ce.getElementsByClassName("delete-button")[0]
         ce.querySelector(".delete-button").addEventListener("click", async function (e) {
             const yes = confirm('確定要刪除嗎？');
             if (!yes) return;
@@ -111,8 +143,9 @@ async function render() {
     // 以date為key，reduce成新物件
     const screenshots_by_date = storageData["honeybees_club"]["screenshots"].reduce((groups, item) => {
         const date = item.created.substring(0, 10);
-        if (!groups[date]) { groups[date] = []; }
-        groups[date].push(item);
+        // if (!groups[date]) { groups[date] = []; }
+        // groups[date].push(item);
+        groups[date] === undefined ? groups[date] = [] : groups[date].push(item);
         return groups;
     }, {});
 
@@ -120,15 +153,17 @@ async function render() {
     usageP.textContent = `${storageData["honeybees_club"]["screenshots"].length} Shots．${Math.round(usageBytes / 1024 / 1024)} MB`;
 
     const dateStrings = Object.keys(screenshots_by_date);
-    for (let x = 0; x < dateStrings.length; x++) {
+    const dlength = dateStrings.length;
+    for (let x = 0; x < dlength; x++) {
         const dateStr = dateStrings[x];
         createHeader(dateStr);
-        for (let y = 0; y < screenshots_by_date[dateStr].length; y++) {
-            const item = screenshots_by_date[dateStr][y];
-            createItem(dateStr, item);
+        const slength = screenshots_by_date[dateStr].length;
+        for (let y = 0; y < slength; y++) {
+            // const item = screenshots_by_date[dateStr][y];
+            createItem(dateStr, screenshots_by_date[dateStr][y]);
         }
     }
-    console.log("append start...");
+    // console.log("append start...");
     area.appendChild(fragment);
     // console.log('render finish.');
     modals();
@@ -161,17 +196,20 @@ function channelFilter() {
         filter_channel.removeChild(filter_channel.lastChild);
     }
 
+    const fragment = document.createDocumentFragment();
+
     const opt = document.createElement("option");
     opt.text = "Filter by channel name";
-    filter_channel.appendChild(opt);
+    fragment.appendChild(opt);
 
     const names = [...new Set(storageData["honeybees_club"]["screenshots"].map(x => x.channel.name))];
     names.forEach(name => {
         const option = document.createElement("option");
         option.value = name;
         option.text = name;
-        filter_channel.appendChild(option);
+        fragment.appendChild(option);
     });
     // console.log(names);
+    filter_channel.appendChild(fragment);
 }
 

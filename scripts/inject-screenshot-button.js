@@ -139,8 +139,10 @@ async function screenshot() {
     ctx.drawImage(info.video, 0, 0, canvas.width, canvas.height);
     const dataURL = canvas.toDataURL('image/png');
     info.dataURL = dataURL;
+    info.mimeType = 'image/png';
     const blob = await new Promise(resolve => canvas.toBlob(resolve));
-    // info.blob = blob;
+    // console.log(blob);
+    info.blob = blob;
     navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
     // console.log(image);
     // Download 
