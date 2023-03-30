@@ -16,77 +16,121 @@
 <body class="dark-mode">
     <!--  has-background-dark has-background-grey-dark has-text-white -->
     <main>
-
-        <div class="bar">
-            <!-- Title -->
+        <!-- Title -->
+        <div class="is-flex is-justify-content-space-between is-align-items-flex-start">
             <div class="content">
-                <p class="title is-2">Screenshots</p>
+                <p class="title is-4">Screenshots</p>
                 <p id="usage" class="subtitle is-6">0 Mb</p>
             </div>
-
-            <!-- Functional Bar -->
-            <div class="is-flex is-flex-direction-column">
-                <div class="buttons mb-0 is-justify-content-flex-end">
-                    <button class="button" id="btn-sort">
-                        <span class="icon is-small">
-                            <span class="material-symbols-outlined">
-                                sort
-                            </span>
+            <div class="buttons">
+                <button class="button" id="btn-mode">
+                    <span class="icon is-small">
+                        <span class="material-symbols-outlined">
+                            dark_mode
                         </span>
-                    </button>
+                    </span>
+                </button>
 
-                    <button class="button" id="btn-delete">
-                        <span class="icon is-small">
-                            <span class="material-symbols-outlined">
-                                delete
-                            </span>
+                <button class="button ml-10px" id="btn-setting">
+                    <span class="icon is-small">
+                        <span class="material-symbols-outlined">
+                            settings
                         </span>
-                    </button>
+                    </span>
+                </button>
 
-                    <button class="button" id="btn-mode">
-                        <span class="icon is-small">
-                            <span class="material-symbols-outlined">
-                                dark_mode
-                            </span>
+                <button class="button ml-10px" id="btn-info">
+                    <span class="icon is-small">
+                        <span class="material-symbols-outlined">
+                            help
                         </span>
-                    </button>
-
-                    <button class="button" id="btn-setting">
-                        <span class="icon is-small">
-                            <span class="material-symbols-outlined">
-                                settings
-                            </span>
-                        </span>
-                    </button>
-
-                    <button class="button" id="btn-info">
-                        <span class="icon is-small">
-                            <span class="material-symbols-outlined">
-                                help
-                            </span>
-                        </span>
-                    </button>
-                </div>
-                <div class="filter-bar block is-flex">
-                    <div class="field-label is-normal">
-                        <label class="label has-text-white">Filters: </label>
-                    </div>
-
-                    <div class="control">
-                        <input class="input" type="date" placeholder="Start Date">
-                    </div>
-
-                    <div class="control">
-                        <div class="select is-fullwidth">
-                            <select id="select-channel">
-                                <option>Filter by channel name</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+                    </span>
+                </button>
             </div>
         </div>
-        
+
+        <!-- Functional Bar -->
+        <div class="filter-bar block is-flex">
+            <div class="control">
+                <input class="input" type="date" placeholder="Start Date">
+            </div>
+
+            <div class="control ml-10px">
+                <input class="input" type="date" placeholder="End Date">
+            </div>
+
+            <div class="vl"></div>
+
+            <div class="control">
+                <div class="select is-fullwidth">
+                    <select id="select-channel">
+                        <option>Filter by channel name</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="vl"></div>
+
+            <button class="button" id="btn-sort">
+                <span class="icon is-small">
+                    <span class="material-symbols-outlined">
+                        sort
+                    </span>
+                </span>
+            </button>
+
+            <!-- <button class="button ml-10px" id="btn-refresh">
+                <span class="icon is-small">
+                    <span class="material-symbols-outlined">
+                        refresh
+                    </span>
+                </span>
+            </button> -->
+
+            <button class="button ml-10px" id="btn-download">
+                <span class="icon is-small">
+                    <span class="material-symbols-outlined">
+                        download
+                    </span>
+                </span>
+            </button>
+
+            <button class="button ml-10px" id="btn-delete">
+                <span class="icon is-small">
+                    <span class="material-symbols-outlined">
+                        delete
+                    </span>
+                </span>
+            </button>
+
+            <div class="vl"></div>
+
+            <button class="button" id="btn-mode">
+                <span class="icon is-small">
+                    <span class="material-symbols-outlined">
+                        dark_mode
+                    </span>
+                </span>
+            </button>
+
+            <button class="button ml-10px" id="btn-setting">
+                <span class="icon is-small">
+                    <span class="material-symbols-outlined">
+                        settings
+                    </span>
+                </span>
+            </button>
+
+            <button class="button ml-10px" id="btn-info">
+                <span class="icon is-small">
+                    <span class="material-symbols-outlined">
+                        help
+                    </span>
+                </span>
+            </button>
+
+        </div>
+        <h4 class="title is-4 screenshot-header-title" data-datetime="2023-01-01"></h4>
         <!-- <progress class="progress is-warning" max="100">0%</progress> -->
 
         <div id="loading" class="content">

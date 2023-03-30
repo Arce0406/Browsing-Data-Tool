@@ -25,7 +25,8 @@ function findYoutubeVideoInfo() {
         "title": document.querySelector('#title.ytd-watch-metadata > h1').innerText,
         "channel": {
             "name": upload_info.textContent,
-            "url": upload_info.getAttribute("href")
+            "url": upload_info.getAttribute("href"),
+            "thumbnail": upload_info.children[0].children[0].getAttribute("src")
         },
         "size": {
             "width": v.videoWidth,
@@ -139,6 +140,7 @@ async function screenshot() {
     ctx.drawImage(info.video, 0, 0, canvas.width, canvas.height);
     const dataURL = canvas.toDataURL('image/png');
     info.dataURL = dataURL;
+    // info.lowQualityDataURL = canvas.toDataURL("image/jpeg", 0.1);
     info.mimeType = 'image/png';
     const blob = await new Promise(resolve => canvas.toBlob(resolve));
     // console.log(blob);

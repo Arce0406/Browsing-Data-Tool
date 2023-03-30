@@ -1,4 +1,4 @@
-:root{
+:root {
   --dark-mode-font-color: white;
   --dark-mode-bg-main-color: black;
   --dark-mode-bg-sub-color: #212225;
@@ -49,41 +49,57 @@ main {
   box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1),
     0 0 0 1px rgba(10, 10, 10, 0.02);
   display: block;
-  padding: 3rem 3rem;
+  padding: 2rem 3rem;
 }
 
-body.light-mode > main > .filter-bar {
+/* body.light-mode .filter-bar {
   border-top: 1px solid #e6e5e5;
   border-bottom: 1px solid #e6e5e5;
 }
 
-body.dark-mode > main > .filter-bar {
+body.dark-mode .filter-bar {
   border-top: 1px solid #a6a7a8;
   border-bottom: 1px solid #a6a7a8;
+} */
+
+.bar {
+  border-bottom: 1px solid #a6a7a8;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
 }
 
 .filter-bar {
-  padding-top: 15px;
-  padding-bottom: 15px;
+  padding-top: 0.5rem;
+  /* padding-bottom: 15px; */
+  display: flex;
+  flex-wrap: wrap;
 }
 
-body.dark-mode > main > .filter-bar > .button {
+.filter-bar > *:not(:last-child) {
+  margin-right: 0.75rem;
+}
+
+body.dark-mode .button {
   background-color: var(--dark-mode-bg-sub-color);
   border-color: var(--dark-mode-border-color);
   color: #f8f8f8;
 }
 
-body.dark-mode > main > .filter-bar > .button:hover{
+body.dark-mode .button:hover {
   border-color: #a6a7a8;
 }
 
-body.light-mode > main > .filter-bar > .button {
+body.light-mode .button {
   background-color: white;
   border-color: #dbdbdb;
   color: #363636;
 }
 
-body.light-mode > main > .filter-bar > .button:hover{}
+body.light-mode .button:hover {
+  border-color: #4a4a4a;
+}
 
 .title {
   color: inherit !important;
@@ -93,26 +109,15 @@ body.light-mode > main > .filter-bar > .button:hover{}
   color: #a6a7a8;
 }
 
-body.dark-mode select {
+body.dark-mode select,
+body.dark-mode input[type='date'] {
   background-color: var(--dark-mode-bg-sub-color);
   border-color: var(--dark-mode-border-color);
   color: #f8f8f8;
 }
 
-.preview-button-group {
-  position: absolute;
-  background-color: transparent;
-  bottom: 0;
-  right: 0;
-  width: 100%;
-}
-
 .modal-content {
   width: 80% !important;
-}
-
-.ml-10px {
-  margin-left: 10px;
 }
 
 .vl {
@@ -132,6 +137,18 @@ body.dark-mode select {
   opacity: 0;
 }
 
+.screenshot:hover > .is-overlay {
+  opacity: 0.5;
+}
+
+.preview-button-group {
+  position: absolute;
+  background-color: transparent;
+  bottom: 0;
+  right: 0;
+  width: 100%;
+}
+
 .screenshot > .preview-button-group {
   opacity: 0;
 }
@@ -140,10 +157,12 @@ body.dark-mode select {
   padding-left: 10px;
 }
 
-.screenshot:hover > .is-overlay {
-  opacity: 0.5;
-}
-
 .screenshot:hover > .preview-button-group {
   opacity: 1;
+}
+
+.screenshot-header::after {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  content: attr(data-datetime);
 }
