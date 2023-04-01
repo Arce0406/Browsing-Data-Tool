@@ -7,18 +7,23 @@ const modal_preview_img = document.getElementById("modal-preview-img");
 const filter_channel = document.getElementById("select-channel");
 let storageData, usageBytes;
 
+
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
-    console.log("init...", new Date());
+    // console.log("init...");
+    const date1 = Date.now();
+    // console.log("init...", new Date());
     // if (window.Worker) {} 
     await getData();
-    await render();
+    // await render();
+    await screenshots();
 
     buttons();
     filters();
     modals();
-    console.log("done.", new Date());
+    const date2 = Date.now();
+    console.log("done.", Math.abs(date2 - date1));
 }
 
 /**
@@ -32,95 +37,101 @@ async function getData() {
     // console.log(storageData["honeybees_club"]["screenshots"]);
 }
 
-async function render() {
-
-    const fragment = document.createDocumentFragment();
-
-    function dataURLtoBlob(dataurl) {
-        var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
-            bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-        while (n--) {
-            u8arr[n] = bstr.charCodeAt(n);
-        }
-        return new Blob([u8arr], { type: mime });
+function dataURLtoBlob(dataURL) {
+    let arr = dataURL.split(','), mimeType = arr[0].match(/:(.*?);/)[1],
+        byteString = atob(arr[1]), n = byteString.length, u8arr = new Uint8Array(n);
+    while (n--) {
+        u8arr[n] = byteString.charCodeAt(n);
     }
+    return new Blob([u8arr], { type: mimeType });
+}
 
-    function dataURItoBlob(dataURI, mimeType) {
-        // convert base64/URLEncoded data component to raw binary data held in a string
-        const byteString = atob(dataURI.split(',')[1]);
-        const mimeString = mimeType ? mimeType : 'image/png';
-        let len = byteString.length;
-        const u8arr = new Uint8Array(len);
-        while (len--) {
-            u8arr[len] = byteString.charCodeAt(len);
-        }
-        // let ia = Uint8Array.from(Array.from(byteString).map(letter => letter.charCodeAt(0)));
+/* Click Events */
 
-        return (new Blob([u8arr], { type: mimeString }));
-    }
+async function onDelete(element) {
+    element.addEventListener("click", async function () {
+        const yes = confirm('確定要刪除嗎？');
+        if (!yes) return;
+        await ShotFileSysten.remove(payload);
+        await init();
+    });
+}
 
-    function createHeader(date) {
-        const ce = document.querySelector(".sample_header").cloneNode(true);
-        ce.classList.remove("sample_header");
-        ce.setAttribute("data-datetime", date);
-        ce.style.display = "block";
-        // ce.children[0].textContent = date;
-        // ce.firstChild.nextSibling.textContent = date;
-        fragment.appendChild(ce);
-    }
+async function onCopy(element, blobType, blob) {
+    element.addEventListener("click", async function () {
+        await navigator.clipboard.write([new ClipboardItem({ [blobType]: blob })]);
+    });
+}
 
-    async function createItem(date, payload) {
-        const ce = document.querySelector(".sample_item").cloneNode(true);
-        ce.classList.remove("sample_item");
-        ce.setAttribute("data-datetime", date);
-        ce.style.display = "block";
-        // ce.children[0].children[0].setAttribute("src", payload.dataURL);
-        // ce.firstChild.nextSibling.firstChild.nextSibling.setAttribute("src", payload.dataURL);
-        const blob = dataURLtoBlob(payload.dataURL, payload.mimeType);
-        ce.children[0].children[0].setAttribute("src", window.URL.createObjectURL(blob));
-        // if(payload.lowQualityDataURL){
-        //     console.log(payload.dataURL);
-        //     console.log(payload.lowQualityDataURL);
-        //     console.log(blobURL);
-        // }
-        ce.setAttribute("data-channel-name", payload.channel.name);
+async function onDowmload(element, payload) {
+    element.addEventListener("click", async function (e) {
+        await chrome.runtime.sendMessage({ "message": "download", "payload": payload });
+    });
+}
 
-        // delete
-        // ce.children[2].children[0].children[0]
-        // ce.getElementsByClassName("delete-button")
-        // ce.querySelector(".delete-button")
-        ce.children[2].children[0].children[0].addEventListener("click", async function (e) {
-            const yes = confirm('確定要刪除嗎？');
-            if (!yes) return;
-            await ShotFileSysten.remove(payload);
-            await init();
-        });
+async function onPreview(element, dataURL) {
+    element.addEventListener("click", function (e) {
+        modal_preview_img.setAttribute("src", dataURL);
+        modal_preview.classList.toggle("is-active");
+    });
+}
 
-        // copy
-        // ce.children[2].children[1].children[0]
-        // ce.querySelector(".copy-button")
-        ce.children[2].children[1].children[0].addEventListener("click", async function (e) {
-            navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
-        });
+// Item Clone
+function createItem(payload) {
+    const date = payload.created.substring(0, 10);
+    const ce = document.querySelector(".sample_item_3").cloneNode(true);
+    ce.classList.remove("sample_item_3");
+    ce.style.display = "block";
+    ce.setAttribute("data-datetime", date);
+    ce.setAttribute("data-channel", payload.channel.name);
+    /*
+    ce
+    .children[0]：figure
+        .children[0]：card-image
+            .children[0]：img
+    .children[1]：overlay
+    .children[2]：flex content 1
+        .children[0]：button delete
+        .children[1]：button expand
+    .children[3]：flex content 2、columns
+        .children[0]：column
+            .children[0]：content
+                .children[0]：title
+                .children[1]：time
+        .children[1]：column
+            .children[0]：button copy
+            .children[1]：button download
+    */
+    /// image
+    const blob = dataURLtoBlob(payload.dataURL, payload.mimeType);
+    ce.children[0].children[0].setAttribute("src", window.URL.createObjectURL(blob));
 
-        // download
-        // ce.children[2].children[2].children[0]
-        // ce.querySelector(".dowmload-button")
-        ce.children[2].children[2].children[0].addEventListener("click", async function (e) {
-            await chrome.runtime.sendMessage({ "message": "download", "payload": payload });
-        });
+    /// title
+    ce.children[3].children[0].children[0].children[0].textContent = payload.channel.name;
 
-        // preview
-        // ce.children[2].children[3].children[0]
-        // ce.querySelector(".preview-button")
-        ce.children[2].children[3].children[0].addEventListener("click", function (e) {
-            modal_preview_img.setAttribute("src", payload.dataURL);
-            modal_preview.classList.toggle("is-active");
-        });
-        // console.log(ce.children[1].children[2].children[0]);
+    /// date
+    ce.children[3].children[0].children[0].children[1].setAttribute("datetime", date);
+    ce.children[3].children[0].children[0].children[1].textContent = date;
 
-        fragment.appendChild(ce);
-    }
+    /// delete
+    onDelete(ce.children[2].children[0]);
+
+    /// preview
+    onPreview(ce.children[2].children[1], payload.dataURL);
+
+    // copy
+    onCopy(ce.children[3].children[1].children[0], blob.type, blob);
+
+    /// download
+    onDowmload(ce.children[3].children[1].children[1], payload);
+
+    return (ce);
+}
+
+function screenshots() {
+    storageData["honeybees_club"]["screenshots"].sort(function (a, b) {
+        return b.created - a.created;
+    });
 
     while (area.firstChild) {
         area.removeChild(area.lastChild);
@@ -130,37 +141,15 @@ async function render() {
         return;
     }
 
-    // console.log(storageData["honeybees_club"]["screenshots"]);
-    // console.log(storageData["honeybees_club"]["user_setting"]);
-
-    // 以date為key，reduce成新物件
-    const screenshots_by_date = storageData["honeybees_club"]["screenshots"].reduce((groups, item) => {
-        const date = item.created.substring(0, 10);
-        if (!groups[date]) { groups[date] = []; }
-        groups[date].push(item);
-        return groups;
-    }, {});
-
-
-    const dateStrings = Object.keys(screenshots_by_date);
-    const dlength = dateStrings.length;
-    for (let x = 0; x < dlength; x++) {
-        const dateStr = dateStrings[x];
-        createHeader(dateStr);
-        const slength = screenshots_by_date[dateStr].length;
-        for (let y = 0; y < slength; y++) {
-            createItem(dateStr, screenshots_by_date[dateStr][y]);
-        }
-    }
-
-    // console.log("append start...");
+    const slength = storageData["honeybees_club"]["screenshots"].length;
+    const fragment = document.createDocumentFragment();
+    for (let y = 0; y < slength; y++) {
+        fragment.appendChild(createItem(storageData["honeybees_club"]["screenshots"][y]));
+    }    
+    area.appendChild(fragment);
     document.getElementById("loading").style.display = "none";
-    // 加入images
-    area.appendChild(fragment);    
-    // 更新使用量
     usageP.textContent = `${storageData["honeybees_club"]["screenshots"].length} Shots．${Math.round(usageBytes / 1024 / 1024)} MB`;
-    // console.log('render finish.');
-    modals();
+    console.log("clone end.");
 }
 
 
@@ -171,19 +160,29 @@ async function render() {
 function modals() {
     function closeModal($el) {
         $el.classList.remove('is-active');
-    } 
-    
-    function onclick(e) {
+    }
+
+    function onCloseActionTrigger(e) {
         const m = e.currentTarget.closest('.modal');
         closeModal(m);
     }
 
-    // Add a click event on various child elements to close the parent modal
-    (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .button') || []).forEach((trigger) => {        
-        trigger.removeEventListener('click',onclick);
-        trigger.addEventListener('click', onclick);
+    function onOpenModalTrigger(e) {
+        document.getElementById(e.currentTarget.dataset.target).classList.toggle("is-active");
+    }
+
+    (document.querySelectorAll(".modal-button") || []).forEach((trigger) => {
+        if (!trigger.dataset.target) return;
+        trigger.removeEventListener("click", onOpenModalTrigger);
+        trigger.addEventListener("click", onOpenModalTrigger);
+    });
+
+    (document.querySelectorAll('.modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .button') || []).forEach((trigger) => {
+        trigger.removeEventListener('click', onCloseActionTrigger);
+        trigger.addEventListener('click', onCloseActionTrigger);
     });
 }
+
 
 function buttons() {
     document.getElementById("btn-mode").addEventListener("click", function (e) {
@@ -197,14 +196,37 @@ function buttons() {
             document.body.classList.add("dark-mode")
         }
     });
+
+    document.getElementById("btn-sort").addEventListener("click", function (e) {
+        e.currentTarget.children[0].children[0].classList.toggle("rotated");
+        // document.querySelectorAll(".screen")
+        const children = area.children;
+        for (var i = 1; i < children.length; i++){
+            area.insertBefore(area.childNodes[i], area.firstChild);
+        }
+    });
 }
+
 
 function filters() {
     // auto complated
-    // https://www.w3schools.com/howto/howto_js_autocomplete.asp
-
-    function onFilterChange(e){
-
+    // https://www.w3schools.com/howto/howto_js_autocomplete.asp    
+    function onFilterChange(e) {
+        // `.screenshot[data-channel]:not([data-channel='${e.target.value}'])`
+        const val = e.target.value;
+        const array = (document.querySelectorAll(`.screenshot[data-channel]`) || []);
+        if (val === "all") {
+            array.forEach((shot) => {
+                shot.style.display = "block";
+            });
+        } else {
+            array.forEach((shot) => {
+                shot.style.display = "block";
+                if (shot.getAttribute("data-channel") != val) {
+                    shot.style.display = "none";
+                }
+            });
+        }
     }
 
     while (filter_channel.firstChild) {
@@ -214,8 +236,8 @@ function filters() {
     const fragment = document.createDocumentFragment();
 
     const opt = document.createElement("option");
-    opt.text = "Filter by channel name";
-    opt.addEventListener("selectionchange", onFilterChange);
+    opt.text = "All channels";
+    opt.value = "all";
     fragment.appendChild(opt);
 
     const names = [...new Set(storageData["honeybees_club"]["screenshots"].map(x => x.channel.name))];
@@ -227,4 +249,6 @@ function filters() {
     });
     // console.log(names);
     filter_channel.appendChild(fragment);
+    // filter_channel.removeEventListener("selectionchange", onFilterChange);
+    filter_channel.addEventListener("change", onFilterChange);
 }

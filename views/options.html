@@ -26,19 +26,12 @@
 
             <!-- Functional Bar -->
             <div class="is-flex is-flex-direction-column">
+                <!-- Buttons -->
                 <div class="buttons mb-0 is-justify-content-flex-end">
                     <button class="button" id="btn-sort">
                         <span class="icon is-small">
                             <span class="material-symbols-outlined">
                                 sort
-                            </span>
-                        </span>
-                    </button>
-
-                    <button class="button" id="btn-delete">
-                        <span class="icon is-small">
-                            <span class="material-symbols-outlined">
-                                delete
                             </span>
                         </span>
                     </button>
@@ -51,7 +44,7 @@
                         </span>
                     </button>
 
-                    <button class="button" id="btn-setting">
+                    <button class="button modal-button" data-target="modal-setting">
                         <span class="icon is-small">
                             <span class="material-symbols-outlined">
                                 settings
@@ -59,90 +52,77 @@
                         </span>
                     </button>
 
-                    <button class="button" id="btn-info">
-                        <span class="icon is-small">
-                            <span class="material-symbols-outlined">
-                                help
-                            </span>
-                        </span>
-                    </button>
                 </div>
+                <!-- Filters -->
                 <div class="filter-bar block is-flex">
-                    <div class="field-label is-normal">
-                        <label class="label has-text-white">Filters: </label>
-                    </div>
-
-                    <div class="control">
-                        <input class="input" type="date" placeholder="Start Date">
-                    </div>
-
+                    <label>Filters: </label>
+                    <!-- <div class="control">
+                        <input class="input" type="date" id="date-filter">
+                    </div> -->
                     <div class="control">
                         <div class="select is-fullwidth">
                             <select id="select-channel">
-                                <option>Filter by channel name</option>
+                                <option>Channel</option>
                             </select>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        
+
         <!-- <progress class="progress is-warning" max="100">0%</progress> -->
 
         <div id="loading" class="content">
             <p>Loading...</p>
         </div>
 
+        <!-- Clone nodes -->
         <div id="main-area" class="block columns is-multiline"></div>
-        <div class="block columns is-multiline" style="display: none;">
-            <!-- sample_header -->
-            <!-- <h4 class="sample_header screenshot-header column is-12 title is-4" data-datetime="2023-01-01"></h4> -->
-            <div class="sample_header screenshot-header column is-12">
-                <h4 class="title is-4" data-datetime="2023-01-01"></h4>
+
+        <!-- style="display: none;" -->
+        <div class="sample_item_3 screenshot column is-3 is-relative" style="display: none;">
+            <figure class="image">
+                <img src="https://bulma.io/images/placeholders/1280x960.png" width="384" height="216">
+            </figure>
+            <div class="is-overlay transition-opacity"></div>
+            <div class="is-absolute p-5 is-flex is-justify-content-space-between" style="width: 100%; top: 0; left: 0;">
+                <button class="screenshot-button">
+                    <span class="icon is-small">
+                        <span class="material-symbols-outlined">
+                            delete
+                        </span>
+                    </span>
+                </button>
+                <button class="screenshot-button">
+                    <span class="icon is-small">
+                        <span class="material-symbols-outlined">
+                            expand_content
+                        </span>
+                    </span>
+                </button>
             </div>
-            <!-- sample_item -->
-            <div class="sample_item screenshot column is-12-mobile is-4-tablet is-3-fullhd is-relative">
-                <figure class="image">
-                    <img src="#" width="384" height="216">
-                </figure>
-                <div class="is-overlay m-3 transition-opacity"></div>
-                <div class="is-flex p-5 preview-button-group transition-opacity">
-                    <p class="control">
-                        <button class="button is-danger delete-button">
-                            <span class="icon is-small">
-                                <span class="material-symbols-outlined">
-                                    delete
-                                </span>
+            <div class="is-absolute p-5 columns" style="min-width: 0; bottom: 0; left: 0; right: 0;">
+                <div class="column pr-0" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+                    <div class="content mb-0">
+                        <p class="title is-6 screenshot-header">channel name</p>
+                        <p class="subtitle is-6">time</p>
+                    </div>
+                </div>
+                <div class="column pl-0 is-narrow buttons is-flex-wrap-nowrap">
+                    <button class="screenshot-button">
+                        <span class="icon is-small">
+                            <span class="material-symbols-outlined">
+                                content_copy
                             </span>
-                        </button>
-                    </p>
-                    <p class="control">
-                        <button class="button is-warning copy-button">
-                            <span class="icon is-small">
-                                <span class="material-symbols-outlined">
-                                    content_copy
-                                </span>
+                        </span>
+                    </button>
+                    <button class="screenshot-button">
+                        <span class="icon is-small">
+                            <span class="material-symbols-outlined">
+                                download
                             </span>
-                        </button>
-                    </p>
-                    <p class="control">
-                        <button class="button dowmload-button">
-                            <span class="icon is-small">
-                                <span class="material-symbols-outlined">
-                                    download
-                                </span>
-                            </span>
-                        </button>
-                    </p>
-                    <p class="control">
-                        <button class="button is-link preview-button">
-                            <span class="icon is-small">
-                                <span class="icon is-small material-symbols-outlined">
-                                    open_in_full
-                                </span>
-                            </span>
-                        </button>
-                    </p>
+                        </span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -161,7 +141,7 @@
     </div>
 
     <!-- Setting Modal -->
-    <div class="modal">
+    <div class="modal" id="modal-setting">
         <div class="modal-background"></div>
         <div class="modal-card">
             <header class="modal-card-head">
@@ -169,7 +149,9 @@
                 <button class="delete" aria-label="close"></button>
             </header>
             <section class="modal-card-body">
-                <!-- Content ... -->
+                <!-- 介紹 -->
+                <div></div>
+                <!-- 下載 -->
                 <div class="field">
                     <label class="label">下載方式</label>
                     <div class="control">
@@ -183,7 +165,6 @@
                         </label>
                     </div>
                 </div>
-
                 <div class="file has-name">
                     <label class="file-label">
                         <input class="file-input" type="file" name="resume" webkitdirectory directory>
@@ -199,6 +180,17 @@
                             Screen Shot 2017-07-29 at 15.54.25.png
                         </span>
                     </label>
+                </div>
+                <!-- Danger Zone -->
+                <div class="">
+                    <button class="button" id="btn-delete">
+                        <span class="icon is-small">
+                            <span class="material-symbols-outlined">
+                                delete
+                            </span>
+                        </span>
+                    </button>
+
                 </div>
 
             </section>

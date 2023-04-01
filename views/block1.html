@@ -1,0 +1,165 @@
+<script>
+    async function render() {
+
+        const fragment = document.createDocumentFragment();
+
+        function createHeader(date) {
+            const ce = document.querySelector(".sample_header").cloneNode(true);
+            ce.classList.remove("sample_header");
+            ce.setAttribute("data-datetime", date);
+            ce.style.display = "block";
+            // ce.children[0].textContent = date;
+            // ce.firstChild.nextSibling.textContent = date;
+            return ce;
+        }
+
+        async function createItem(date, payload) {
+            const ce = document.querySelector(".sample_item").cloneNode(true);
+            ce.classList.remove("sample_item");
+            ce.style.display = "block";
+            ce.setAttribute("data-datetime", date);
+            ce.setAttribute("data-channel", payload.channel.name);
+
+            /// image
+            const blob = dataURLtoBlob(payload.dataURL, payload.mimeType);
+            ce.children[0].children[0].setAttribute("src", window.URL.createObjectURL(blob));
+            // ce.children[0].children[0].setAttribute("src", payload.dataURL);
+            // ce.firstChild.nextSibling.firstChild.nextSibling.setAttribute("src", payload.dataURL);        
+
+            /// delete
+            // ce.children[2].children[0].children[0]
+            // ce.getElementsByClassName("delete-button")
+            // ce.querySelector(".delete-button")
+            /// delete
+            ce.children[2].children[0].children[0].children[0].addEventListener("click", async function (e) {
+                const yes = confirm('確定要刪除嗎？');
+                if (!yes) return;
+                await ShotFileSysten.remove(payload);
+                await init();
+            });
+
+            // copy
+            ce.children[2].children[0].children[1].children[0].addEventListener("click", async function (e) {
+                navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
+            });
+
+            /// download
+            ce.children[2].children[2].children[0].children[0].addEventListener("click", async function (e) {
+                await chrome.runtime.sendMessage({ "message": "download", "payload": payload });
+            });
+
+            /// preview
+            ce.children[2].children[2].children[1].children[0].addEventListener("click", function (e) {
+                modal_preview_img.setAttribute("src", payload.dataURL);
+                modal_preview.classList.toggle("is-active");
+            });
+            // console.log(ce.children[1].children[2].children[0]);
+
+            return (ce);
+        }
+
+        while (area.firstChild) {
+            area.removeChild(area.lastChild);
+        }
+
+        if (!storageData && !storageData["honeybees_club"]) {
+            return;
+        }
+
+        const screenshotObject = storageData["honeybees_club"]["screenshots"].reduce((groups, item) => {
+            const date = item.created.substring(0, 10);
+            if (!groups) groups = { "keys": [], "values": {} };
+            if (!groups["keys"]) groups["keys"] = [];
+            if (!groups["values"]) groups["values"] = {};
+            if (!groups["values"][date]) { groups["values"][date] = []; }
+            if (!groups["keys"].includes(date)) { groups["keys"].push(date); }
+            groups["values"][date].push(item);
+
+            return groups;
+        }, {});
+        // console.log(storageData["honeybees_club"]["screenshots"]);
+        // console.log(storageData["honeybees_club"]["user_setting"]);
+
+        // const dateStrings = Object.keys(screenshotObject);
+        const dateStrings = screenshotObject["keys"];
+        const dlength = dateStrings.length;
+        for (let x = 0; x < dlength; x++) {
+            const dateStr = dateStrings[x];
+            fragment.appendChild(createHeader(dateStr));
+            const slength = screenshotObject["values"][dateStr].length;
+            for (let y = 0; y < slength; y++) {
+                fragment.appendChild(await createItem(dateStr, screenshotObject["values"][dateStr][y]));
+            }
+        }
+
+        // console.log("append start...");
+        document.getElementById("loading").style.display = "none";
+        // 加入images
+        area.appendChild(fragment);
+        // 更新使用量
+        usageP.textContent = `${storageData["honeybees_club"]["screenshots"].length} Shots．${Math.round(usageBytes / 1024 / 1024)} MB`;
+        // console.log('render finish.');
+    }
+</script>
+
+<div class="block columns is-multiline" style="display: none;">
+    <!-- sample_header -->
+    <!-- <h4 class="sample_header screenshot-header column is-12 title is-4" data-datetime="2023-01-01"></h4> -->
+    <div class="sample_header screenshot-header column is-12">
+        <h4 class="title is-4" data-datetime="2023-01-01"></h4>
+    </div>
+    <!-- sample_item -->
+    <div class="sample_item screenshot column is-12-mobile is-4-tablet is-3-desktop is-2-fullhd is-relative">
+        <figure class="image">
+            <img src="../images/gray.png" width="384" height="216">
+        </figure>
+        <div class="is-overlay m-3 transition-opacity"></div>
+        <div class="preview-button-group transition-opacity">
+
+            <div class="is-flex">
+                <p class="control">
+                    <button class="button is-danger delete-button">
+                        <span class="icon is-small">
+                            <span class="material-symbols-outlined">
+                                delete
+                            </span>
+                        </span>
+                    </button>
+                </p>
+                <p class="control">
+                    <button class="button is-warning copy-button">
+                        <span class="icon is-small">
+                            <span class="material-symbols-outlined">
+                                content_copy
+                            </span>
+                        </span>
+                    </button>
+                </p>
+            </div>
+
+            <div class="nothing is-flex-grow-1"></div>
+
+            <div class="is-flex">
+                <p class="control">
+                    <button class="button dowmload-button">
+                        <span class="icon is-small">
+                            <span class="material-symbols-outlined">
+                                download
+                            </span>
+                        </span>
+                    </button>
+                </p>
+                <p class="control">
+                    <button class="button is-link preview-button">
+                        <span class="icon is-small">
+                            <span class="icon is-small material-symbols-outlined">
+                                open_in_full
+                            </span>
+                        </span>
+                    </button>
+                </p>
+            </div>
+
+        </div>
+    </div>
+</div>

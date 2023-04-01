@@ -1,0 +1,140 @@
+<script>
+
+    async function render2() {
+
+        storageData["honeybees_club"]["screenshots"].sort(function (a, b) {
+            return b.created - a.created;
+        });
+
+        const fragment = document.createDocumentFragment();
+
+        async function createItem(payload) {
+            const date = payload.created.substring(0, 10);
+            const ce = document.querySelector(".sample_item_2").cloneNode(true);
+            ce.classList.remove("sample_item_2");
+            ce.style.display = "block";
+            ce.setAttribute("data-datetime", date);
+            ce.setAttribute("data-channel", payload.channel.name);
+
+            /*
+            ce
+            .children[0]：card
+                .children[0]：card-image
+                    .children[0].children[0]：img
+                    .children[1]：overlay
+                .children[1]：card-content
+                    .children[0].children[0]：time
+                    .children[1]：buttons
+            */
+
+            /// image
+            const blob = dataURLtoBlob(payload.dataURL, payload.mimeType);
+            ce.children[0].children[0].children[0].children[0].setAttribute("src", window.URL.createObjectURL(blob));
+
+            /// date
+            ce.children[0].children[1].children[0].children[0].setAttribute("datetime", date);
+            ce.children[0].children[1].children[0].children[0].textContent = date;
+
+            /// delete
+            ce.children[0].children[1].children[1].children[0].addEventListener("click", async function (e) {
+                const yes = confirm('確定要刪除嗎？');
+                if (!yes) return;
+                await ShotFileSysten.remove(payload);
+                await init();
+            });
+
+            // copy
+            ce.children[0].children[1].children[1].children[1].addEventListener("click", async function (e) {
+                navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
+            });
+
+            /// download
+            ce.children[0].children[1].children[1].children[2].addEventListener("click", async function (e) {
+                await chrome.runtime.sendMessage({ "message": "download", "payload": payload });
+            });
+
+            /// preview
+            // ce.children[0].children[1].children[1].children[3]
+            ce.children[0].children[0].children[1].addEventListener("click", function (e) {
+                modal_preview_img.setAttribute("src", payload.dataURL);
+                modal_preview.classList.toggle("is-active");
+            });
+
+            return (ce);
+        }
+
+        while (area.firstChild) {
+            area.removeChild(area.lastChild);
+        }
+
+        if (!storageData && !storageData["honeybees_club"]) {
+            return;
+        }
+
+
+        // const dateKeys = storageData["honeybees_club"]["screenshots"].reduce((groups, item) => {
+        //     const date = item.created.substring(0, 10);
+        //     if(!groups) groups = [];
+        //     if(!groups.includes(date)) groups.push(date);
+        //     return groups;
+        // }, {});
+
+        const slength = storageData["honeybees_club"]["screenshots"].length;
+        for (let y = 0; y < slength; y++) {
+            fragment.appendChild(await createItem(storageData["honeybees_club"]["screenshots"][y]));
+        }
+
+        document.getElementById("loading").style.display = "none";
+        area.appendChild(fragment);
+        usageP.textContent = `${storageData["honeybees_club"]["screenshots"].length} Shots．${Math.round(usageBytes / 1024 / 1024)} MB`;
+    }
+
+
+</script>
+
+<div class="sample_item_2 screenshot column is-12-mobile is-4-tablet is-3-desktop is-3-fullhd"
+    style="display: none;">
+    <div class="card has-background-grey-dark has-text-light">
+        <div class="card-image">
+            <figure class="image is-16by9">
+                <img src="https://bulma.io/images/placeholders/1280x960.png" width="384" height="216">
+            </figure>
+            <div class="is-overlay transition-opacity"></div>
+        </div>
+        <div class="card-content p-4" style="position: absolute;">
+            <div class="content">
+                <time datetime="2016-1-1">2016-01-01</time>
+            </div>
+            <div class="buttons">
+                <button class="screenshot-button is-danger delete-button">
+                    <span class="icon is-small">
+                        <span class="material-symbols-outlined">
+                            delete
+                        </span>
+                    </span>
+                </button>
+                <button class="screenshot-button is-warning copy-button">
+                    <span class="icon is-small">
+                        <span class="material-symbols-outlined">
+                            content_copy
+                        </span>
+                    </span>
+                </button>
+                <button class="screenshot-button dowmload-button">
+                    <span class="icon is-small">
+                        <span class="material-symbols-outlined">
+                            download
+                        </span>
+                    </span>
+                </button>
+                <!-- <button class="button is-link preview-button">
+                <span class="icon is-small">
+                    <span class="icon is-small material-symbols-outlined">
+                        open_in_full
+                    </span>
+                </span>
+            </button> -->
+            </div>
+        </div>
+    </div>
+</div>

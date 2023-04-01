@@ -14,9 +14,32 @@
   --light-mode-border-color: #dbdbdb;
 }
 
+/* Common */
+.is-absolute {
+  position: absolute !important;
+}
+
+.d-none {
+  display: none !important;
+}
+
+.transition-opacity {
+  /* transition: opacity 120ms cubic-bezier(0.95, 0.05, 0.795, 0.035) 50ms; */
+  transition: opacity 120ms;
+}
+
+/* Material Design */
+
 .material-symbols-outlined {
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+  transition: transform 150ms;
 }
+
+.material-symbols-outlined.rotated {
+  transform: rotate(180deg) scaleX(-1); /* Equal to rotateZ(45deg) */
+}
+
+/* body */
 
 body {
   min-height: 100vh;
@@ -44,6 +67,84 @@ body.light-mode > main {
   background-color: #fff;
 }
 
+/* button */
+
+body.dark-mode .bar button {
+  background-color: var(--dark-mode-bg-sub-color);
+  border-color: var(--dark-mode-border-color);
+  color: #f8f8f8;
+}
+
+body.dark-mode .bar button:hover {
+  border-color: #a6a7a8;
+}
+
+body.light-mode .bar button {
+  background-color: white;
+  border-color: #dbdbdb;
+  color: #363636;
+}
+
+body.light-mode .bar button:hover {
+  border-color: #4a4a4a;
+}
+
+.screenshot-button {
+  box-shadow: none;
+  cursor: pointer;
+  position: relative;
+  display: inline-flex;
+  vertical-align: top;
+  justify-content: center;
+  line-height: 1.5;
+  height: 2em;
+  width: 2em;
+  align-items: center;
+  /* margin-bottom: 0.5rem;
+  margin-right: 0.5rem; */
+
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-width: 1px;
+  border-radius: 9999px;
+  color: #dbdbdb;
+  font-size: 1rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.screenshot-button:hover{
+  color: #fff;
+}
+
+/* text */
+
+label, .title {
+  color: inherit !important;
+}
+
+.subtitle {
+  color: #a6a7a8;
+}
+
+.screenshot .title {
+  color: white !important;
+}
+
+.screenshot .subtitle {
+  color: #dbdbdb;
+}
+
+
+body.dark-mode select,
+body.dark-mode input[type='date'] {
+  background-color: var(--dark-mode-bg-sub-color);
+  border-color: var(--dark-mode-border-color);
+  color: #f8f8f8;
+}
+
+/* main */
+
 main {
   border-radius: 6px;
   box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1),
@@ -52,15 +153,7 @@ main {
   padding: 2rem 3rem;
 }
 
-/* body.light-mode .filter-bar {
-  border-top: 1px solid #e6e5e5;
-  border-bottom: 1px solid #e6e5e5;
-}
-
-body.dark-mode .filter-bar {
-  border-top: 1px solid #a6a7a8;
-  border-bottom: 1px solid #a6a7a8;
-} */
+/* bar、filter-bar */
 
 .bar {
   border-bottom: 1px solid #a6a7a8;
@@ -75,49 +168,11 @@ body.dark-mode .filter-bar {
   /* padding-bottom: 15px; */
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .filter-bar > *:not(:last-child) {
   margin-right: 0.75rem;
-}
-
-body.dark-mode .button {
-  background-color: var(--dark-mode-bg-sub-color);
-  border-color: var(--dark-mode-border-color);
-  color: #f8f8f8;
-}
-
-body.dark-mode .button:hover {
-  border-color: #a6a7a8;
-}
-
-body.light-mode .button {
-  background-color: white;
-  border-color: #dbdbdb;
-  color: #363636;
-}
-
-body.light-mode .button:hover {
-  border-color: #4a4a4a;
-}
-
-.title {
-  color: inherit !important;
-}
-
-.subtitle {
-  color: #a6a7a8;
-}
-
-body.dark-mode select,
-body.dark-mode input[type='date'] {
-  background-color: var(--dark-mode-bg-sub-color);
-  border-color: var(--dark-mode-border-color);
-  color: #f8f8f8;
-}
-
-.modal-content {
-  width: 80% !important;
 }
 
 .vl {
@@ -128,41 +183,36 @@ body.dark-mode input[type='date'] {
   margin: 0 20px !important;
 }
 
-.transition-opacity {
-  transition: opacity 120ms cubic-bezier(0.95, 0.05, 0.795, 0.035) 50ms;
+/* modal */
+
+.modal-content {
+  width: 80% !important;
 }
 
-.screenshot > .is-overlay {
-  background-color: black;
+/* screenshot */
+
+.screenshot-header::after {
+  overflow: hidden; 
+  white-space: nowrap; 
+  text-overflow: ellipsis;
+  content: attr(data-datetime);
+}
+
+.screenshot > div:not(.is-overlay) {    
   opacity: 0;
 }
 
-.screenshot:hover > .is-overlay {
-  opacity: 0.5;
-}
-
-.preview-button-group {
-  position: absolute;
-  background-color: transparent;
-  bottom: 0;
-  right: 0;
-  width: 100%;
-}
-
-.screenshot > .preview-button-group {
-  opacity: 0;
-}
-
-.screenshot > .preview-button-group > :not(:first-child) {
-  padding-left: 10px;
-}
-
-.screenshot:hover > .preview-button-group {
+.screenshot:hover > div:not(.is-overlay) {    
   opacity: 1;
 }
 
-.screenshot-header::after {
-  font-size: 1.5rem;
-  margin-bottom: 1.5rem;
-  content: attr(data-datetime);
+
+.screenshot > .is-overlay {  
+  background-color: black;
+  opacity: 0;
+  margin: 0.75rem;
+}
+
+.screenshot:hover > .is-overlay {
+  opacity: 0.8;
 }

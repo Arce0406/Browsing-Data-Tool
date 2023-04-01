@@ -26,7 +26,7 @@ function findYoutubeVideoInfo() {
         "channel": {
             "name": upload_info.textContent,
             "url": upload_info.getAttribute("href"),
-            "thumbnail": upload_info.children[0].children[0].getAttribute("src")
+            // "thumbnail": upload_info.children[0].children[0].getAttribute("src")
         },
         "size": {
             "width": v.videoWidth,
