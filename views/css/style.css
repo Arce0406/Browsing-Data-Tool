@@ -113,13 +113,14 @@ body.light-mode .bar button:hover {
   white-space: nowrap;
 }
 
-.screenshot-button:hover{
+.screenshot-button:hover {
   color: #fff;
 }
 
 /* text */
 
-label, .title {
+main label,
+main .title {
   color: inherit !important;
 }
 
@@ -134,7 +135,6 @@ label, .title {
 .screenshot .subtitle {
   color: #dbdbdb;
 }
-
 
 body.dark-mode select,
 body.dark-mode input[type='date'] {
@@ -184,30 +184,32 @@ main {
 }
 
 /* modal */
+.modal {
+  color: black;
+}
 
-.modal-content {
+.modal-card, .modal-content {
   width: 80% !important;
 }
 
 /* screenshot */
 
 .screenshot-header::after {
-  overflow: hidden; 
-  white-space: nowrap; 
+  overflow: hidden;
+  white-space: nowrap;
   text-overflow: ellipsis;
   content: attr(data-datetime);
 }
 
-.screenshot > div:not(.is-overlay) {    
+.screenshot > div:not(.is-overlay) {
   opacity: 0;
 }
 
-.screenshot:hover > div:not(.is-overlay) {    
+.screenshot:hover > div:not(.is-overlay) {
   opacity: 1;
 }
 
-
-.screenshot > .is-overlay {  
+.screenshot > .is-overlay {
   background-color: black;
   opacity: 0;
   margin: 0.75rem;

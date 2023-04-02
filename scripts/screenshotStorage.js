@@ -4,14 +4,18 @@
  */
 
 const default_user_setting = {
-    "download_path": "",
-    "background": {
-        "mode": "dark"
-    }
+    "download": {
+        "type": "auto", // auto | manual
+        "path": ""
+    },
+    "background": "dark",
+
 };
 
 import * as FileSysten from "./fileSystem.js";
 const _key = "honeybees_club";//"youtube_screenshots";
+const _key_youtube_screenshot = "honeybeesclub_youtube_screenshots";//"youtube_screenshots";
+const _key_user_setting = "honeybeesclub_user_setting";//"youtube_screenshots";
 
 async function usage(ks) {
     const result = await FileSysten.usage(ks);

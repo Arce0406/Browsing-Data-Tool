@@ -145,7 +145,7 @@ function screenshots() {
     const fragment = document.createDocumentFragment();
     for (let y = 0; y < slength; y++) {
         fragment.appendChild(createItem(storageData["honeybees_club"]["screenshots"][y]));
-    }    
+    }
     area.appendChild(fragment);
     document.getElementById("loading").style.display = "none";
     usageP.textContent = `${storageData["honeybees_club"]["screenshots"].length} Shots．${Math.round(usageBytes / 1024 / 1024)} MB`;
@@ -201,10 +201,20 @@ function buttons() {
         e.currentTarget.children[0].children[0].classList.toggle("rotated");
         // document.querySelectorAll(".screen")
         const children = area.children;
-        for (var i = 1; i < children.length; i++){
+        for (var i = 1; i < children.length; i++) {
             area.insertBefore(area.childNodes[i], area.firstChild);
         }
     });
+    const form = document.getElementById("form-setting");
+    form.addEventListener("submit", (event) => {
+        event.preventDefault();
+        const data = new FormData(form);
+        // for (const entry of data) {
+        //     console.log(`${entry[0]}=${entry[1]}`);
+        // }
+        console.log(data.get("download_type"));
+        console.log(data.get("download_path"));
+    }, false);
 }
 
 
