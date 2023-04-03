@@ -1,6 +1,7 @@
 import * as MenuAPI from "./scripts/contextMenu.js";
 import * as Utils from "./scripts/utils.js";
 import * as ScreenshotFiles from "./scripts/screenshotStorage.js"
+import * as UserSettingStorage from "./scripts/settingStorage.js";
 
 const filter = { url: [{ hostEquals: "www.youtube.com", pathEquals: "/watch" }, { hostEquals: "www.youtube.com", pathEquals: "/live" }] };
 function injectScript(details) { Utils.screenShotInject2(details.tabId); }
@@ -35,7 +36,8 @@ chrome.commands.onCommand.addListener(async (command, tab) => {
 /**
  * Monitor communication
  */
-chrome.runtime.onMessage.addListener(async(request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
+  // console.log(request);
   if (request.message === "setNotify") {
     // NotifyAPI.Permission();
     NotifyAPI.normalNotification(request.notification.title, request.notification.header, request.notification.subheader
@@ -48,11 +50,22 @@ chrome.runtime.onMessage.addListener(async(request, sender, sendResponse) => {
     sendResponse(true);
     return true;
   }
-  else if (request.message === "save") {
+  else if (request.message === "saveScreenshot") {
     await ScreenshotFiles.set(request.payload);
     sendResponse(true);
     return true;
   }
+  else if (request.message === "saveUserSetting") {
+    await UserSettingStorage.set(request.payload);
+    sendResponse(true);
+    return true;
+  }
+  // else if (request.message === "getUserSetting") {
+  //   const setting = await UserSettingStorage.get();
+  //   console.log(setting[UserSettingStorage.key], Date.now());
+  //   sendResponse({ "result": setting[UserSettingStorage.key] });
+  //   return true;
+  // }
   else if (request.message === "delete") {
     // console.log("start delete");
     await ScreenshotFiles.remove(request.payload);
@@ -67,7 +80,8 @@ chrome.runtime.onMessage.addListener(async(request, sender, sendResponse) => {
  */
 chrome.storage.onChanged.addListener((changes, namespace) => {
   for (let [key, { oldValue, newValue }] of Object.entries(changes)) {
-    console.log(`Storage key "${key}" in namespace "${namespace}" changed.`, `Old value was "${oldValue}", new value is "${newValue}".`);
+    console.log(`Storage key "${key}" in namespace "${namespace}" changed.`);
+    // console.log(`Storage key "${key}" in namespace "${namespace}" changed.`, `Old value was "${oldValue}", new value is "${newValue}".`);
   }
 });
 

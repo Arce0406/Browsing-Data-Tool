@@ -1,24 +1,31 @@
-import * as ShotFileSysten from "../../scripts/screenshotStorage.js";
+import * as ScreenshotStorage from "../../scripts/screenshotStorage.js";
+import * as UserSettingStorage from "../../scripts/settingStorage.js";
 
 const area = document.getElementById("main-area");
 const usageP = document.getElementById("usage");
 const modal_preview = document.getElementById("modal-preview");
 const modal_preview_img = document.getElementById("modal-preview-img");
 const filter_channel = document.getElementById("select-channel");
-let storageData, usageBytes;
+const hint_text = document.getElementById("loading");
+const btn_mode = document.getElementById("btn-mode");
+const input_downloadType_auto = document.getElementById("downloadType1");
+const input_downloadType_manual = document.getElementById("downloadType2");
+const input_downloadPath = document.getElementById("downloadPath");
+let userSetting, storageData, usageBytes;
+let mode = "dark"; // dark / light
 
 
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
-    // console.log("init...");
-    const date1 = Date.now();
-    // console.log("init...", new Date());
-    // if (window.Worker) {} 
-    await getData();
-    // await render();
-    await screenshots();
+    await ScreenshotStorage.init();
+    await UserSettingStorage.init();
 
+    const date1 = Date.now();
+    await getScreenshots();
+    await getUserSettings();
+    onSettingsLoad();
+    screenshots();
     buttons();
     filters();
     modals();
@@ -27,16 +34,45 @@ async function init() {
 }
 
 /**
- * Screenshot 相關
+ * 取得資料
  */
-
-async function getData() {
-    storageData = await ShotFileSysten.getAll();
-    usageBytes = await ShotFileSysten.usage();
-    storageData["honeybees_club"]["screenshots"] = storageData["honeybees_club"]["screenshots"].reverse();
-    // console.log(storageData["honeybees_club"]["screenshots"]);
+async function getScreenshots() {
+    storageData = await ScreenshotStorage.get();
+    storageData = storageData[ScreenshotStorage.key];
+    usageBytes = await ScreenshotStorage.usage();
+    if (storageData) storageData = storageData.reverse();
 }
 
+async function getUserSettings() {
+    userSetting = await UserSettingStorage.get();
+    userSetting = userSetting[UserSettingStorage.key];
+}
+
+function onSettingsLoad() {
+    input_downloadPath.value = userSetting.download.path;
+    input_downloadType_auto.checked = (userSetting.download.type === "auto" ? true : false);
+    input_downloadType_manual.checked = (userSetting.download.type === "manual" ? true : false);
+
+    function onDownloadTypeChange(e) {
+        if (input_downloadType_auto.checked && !input_downloadType_manual.checked) {
+            input_downloadPath.disabled = false;
+        } else {
+            input_downloadPath.disabled = true;
+        }
+    }
+    input_downloadType_auto.addEventListener("change", onDownloadTypeChange);
+    input_downloadType_manual.addEventListener("change", onDownloadTypeChange);
+    onDownloadTypeChange();
+
+    if (userSetting.background === "dark") {
+        setDark();
+    }
+    else {
+        setLight();
+    }
+}
+
+// Convert dataURL to blob
 function dataURLtoBlob(dataURL) {
     let arr = dataURL.split(','), mimeType = arr[0].match(/:(.*?);/)[1],
         byteString = atob(arr[1]), n = byteString.length, u8arr = new Uint8Array(n);
@@ -48,11 +84,11 @@ function dataURLtoBlob(dataURL) {
 
 /* Click Events */
 
-async function onDelete(element) {
+async function onDelete(element, payload) {
     element.addEventListener("click", async function () {
         const yes = confirm('確定要刪除嗎？');
         if (!yes) return;
-        await ShotFileSysten.remove(payload);
+        await ScreenshotStorage.remove(payload);
         await init();
     });
 }
@@ -114,7 +150,7 @@ function createItem(payload) {
     ce.children[3].children[0].children[0].children[1].textContent = date;
 
     /// delete
-    onDelete(ce.children[2].children[0]);
+    onDelete(ce.children[2].children[0], payload);
 
     /// preview
     onPreview(ce.children[2].children[1], payload.dataURL);
@@ -128,27 +164,32 @@ function createItem(payload) {
     return (ce);
 }
 
+// Create ui
 function screenshots() {
-    storageData["honeybees_club"]["screenshots"].sort(function (a, b) {
+    const length = storageData.length;
+
+    if (!storageData || length <= 0) {
+        hint_text.textContent = "No data.";
+        return;
+    }
+
+    // sort
+    storageData.sort(function (a, b) {
         return b.created - a.created;
     });
 
+    // clear dom
     while (area.firstChild) {
         area.removeChild(area.lastChild);
     }
 
-    if (!storageData && !storageData["honeybees_club"]) {
-        return;
-    }
-
-    const slength = storageData["honeybees_club"]["screenshots"].length;
     const fragment = document.createDocumentFragment();
-    for (let y = 0; y < slength; y++) {
-        fragment.appendChild(createItem(storageData["honeybees_club"]["screenshots"][y]));
+    for (let y = 0; y < length; y++) {
+        fragment.appendChild(createItem(storageData[y]));
     }
     area.appendChild(fragment);
-    document.getElementById("loading").style.display = "none";
-    usageP.textContent = `${storageData["honeybees_club"]["screenshots"].length} Shots．${Math.round(usageBytes / 1024 / 1024)} MB`;
+    hint_text.style.display = "none";
+    usageP.textContent = `${length} Shots．${Math.round(usageBytes / 1024 / 1024)} MB`;
     console.log("clone end.");
 }
 
@@ -184,16 +225,28 @@ function modals() {
 }
 
 
+function setDark() {
+    btn_mode.children[0].children[0].textContent = "light_mode";
+    document.body.classList.remove("light-mode");
+    document.body.classList.add("dark-mode");
+    mode = "dark";
+}
+
+function setLight() {
+    btn_mode.children[0].children[0].textContent = "dark_mode";
+    document.body.classList.remove("dark-mode");
+    document.body.classList.add("light-mode");
+    mode = "light";
+}
+
 function buttons() {
-    document.getElementById("btn-mode").addEventListener("click", function (e) {
+    btn_mode.addEventListener("click", function (e) {
         if (document.body.classList.contains("dark-mode")) {
-            document.body.classList.remove("dark-mode");
-            document.body.classList.add("light-mode")
+            setLight();
         }
         else {
             // if (document.body.classList.contains("light-mode")) 
-            document.body.classList.remove("light-mode");
-            document.body.classList.add("dark-mode")
+            setDark();
         }
     });
 
@@ -205,20 +258,40 @@ function buttons() {
             area.insertBefore(area.childNodes[i], area.firstChild);
         }
     });
+
     const form = document.getElementById("form-setting");
-    form.addEventListener("submit", (event) => {
+    form.addEventListener("submit", async (event) => {
         event.preventDefault();
         const data = new FormData(form);
         // for (const entry of data) {
         //     console.log(`${entry[0]}=${entry[1]}`);
         // }
-        console.log(data.get("download_type"));
-        console.log(data.get("download_path"));
+        const download_type = data.get("download_type");
+        const download_path = data.get("download_path");
+
+        await UserSettingStorage.set({
+            "download": {
+                "type": download_type ? download_type : "manual", // auto | manual
+                "path": download_path ? download_path : ""
+            },
+            "background": mode,
+        });
+
+        await getUserSettings();
+
     }, false);
+
+    document.getElementById("btn-delete-all").addEventListener("click", async function (e) {
+        const yes = confirm('確定要刪除所有的截圖嗎？此操作將無法復原，請先確保已經下載完畢需要的截圖。');
+        if (!yes) return;
+        await ScreenshotStorage.clear();
+    });
 }
 
 
 function filters() {
+    if (!storageData["honeybees_club"] || !storageData["honeybees_club"]["screenshots"]) return;
+
     // auto complated
     // https://www.w3schools.com/howto/howto_js_autocomplete.asp    
     function onFilterChange(e) {

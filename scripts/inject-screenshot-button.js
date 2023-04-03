@@ -1,3 +1,5 @@
+let isYoutubeScreenshotDownloadDirectly = false;
+
 /**
  * Mointer message from extension
  */
@@ -7,9 +9,20 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
         const result = await screenshot();
         sendResponse({ result: result });
         return true;
+    // } else if (request.command === "update_setting") {
+    //     isYoutubeScreenshotDownloadDirectly = request.isDirectly;
+    //     return true;
     }
 });
 
+async function userSetting() {
+    // const response = await chrome.runtime.sendMessage({ "message": "getUserSetting" });
+    const k = "honeybeesclub_user_setting";
+    let r = await chrome.storage.local.get(k);
+    r = r[k];
+    isYoutubeScreenshotDownloadDirectly = r.download.type === "auto" ? true : false;
+    // console.log(result, Date.now());
+}
 
 /**
  * Get video infomation (from DOM)
@@ -116,10 +129,15 @@ async function downloadBackend(file) {
     return response;
 }
 
-async function saveToStorage(file) {
+/**
+ * Parse date to background, and save to chrome.storage
+ * @param {*} file 
+ * @returns {*} response
+ */
+async function saveScreenshotToStorage(file) {
     // console.log(file);
     if (file["video"]) delete file.video;
-    const response = await chrome.runtime.sendMessage({ "message": "save", "payload": file });
+    const response = await chrome.runtime.sendMessage({ "message": "saveScreenshot", "payload": file });
     return response;
 }
 
@@ -128,34 +146,40 @@ async function saveToStorage(file) {
  * @returns {String?} Image data url
  */
 async function screenshot() {
+    // Get dom date from webpage
     const info = findYoutubeVideoInfo();
     if (!info.video) {
         console.log("找不到 Video.");
         return;
     }
+
+    // Copy video frame to canvas
     const canvas = document.createElement('canvas');
     canvas.width = info.size.width;
     canvas.height = info.size.height;
     let ctx = canvas.getContext('2d');
     ctx.drawImage(info.video, 0, 0, canvas.width, canvas.height);
-    const dataURL = canvas.toDataURL('image/png');
-    info.dataURL = dataURL;
-    // info.lowQualityDataURL = canvas.toDataURL("image/jpeg", 0.1);
-    info.mimeType = 'image/png';
-    const blob = await new Promise(resolve => canvas.toBlob(resolve));
-    // console.log(blob);
-    info.blob = blob;
-    navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
-    // console.log(image);
-    // Download 
-    // downloadBackend(image);
-    // downloadFrontend(image);
 
-    // Toast
+    // Convert canvas context to data url
+    const fileType = "image/png";
+    const dataURL = canvas.toDataURL(fileType);
+    // info.lowQualityDataURL = canvas.toDataURL("image/jpeg", 0.1);
+    info.dataURL = dataURL;
+    info.mimeType = fileType;
+
+    // Copy to clipboard
+    const blob = await new Promise(resolve => canvas.toBlob(resolve));
+    navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
+
+    // Download 
+    if(isYoutubeScreenshotDownloadDirectly) downloadBackend(info);
+    // downloadFrontend(info);
+
+    // Show toast
     toastForScreenShot(info);
 
-    // Save
-    saveToStorage(info);
+    // Save data
+    saveScreenshotToStorage(info);
 
     return dataURL;
 }
@@ -243,5 +267,5 @@ function createTakeVideoScreenshotButton() {
     }
 }
 
-
+userSetting();
 createTakeVideoScreenshotButton();

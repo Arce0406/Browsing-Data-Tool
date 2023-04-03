@@ -145,7 +145,7 @@
         <div class="modal-background"></div>
         <div class="modal-card">
             <header class="modal-card-head">
-                <p class="modal-card-title">Setting</p>
+                <p class="modal-card-title">關於本插件</p>
                 <button class="delete" aria-label="close"></button>
             </header>
             <section class="modal-card-body">
@@ -155,17 +155,20 @@
                     <p>
                         <span>此功能讓使用者能方便的進行Youtube影片截圖(screenshot)。</span>
                         <br>
-                        <span>每次截圖後將會有預覽畫面出現在視窗右下角，並且所有的截圖將會保存在<a href="https://developer.chrome.com/docs/extensions/reference/storage/#usage">chrome.storage</a></span>
-                    </p>                    
+                        <span>每次截圖後將會有預覽畫面出現在視窗右下角，並且所有的截圖將會保存在<a
+                                href="https://developer.chrome.com/docs/extensions/reference/storage/#usage">chrome.storage</a></span>
+                    </p>
                     <blockquote>
                         chrome.storage 是 Chrome 瀏覽器插件的專用的儲存API。<br>
-                        與 Web Storage API 的 IndexedDB、localStorage 不同的是，即便清除了瀏覽器的 cache 或 history，chrome.storage 中的資料仍會保留。<br>
+                        與 Web Storage API 的 IndexedDB、localStorage 不同的是，即便清除了瀏覽器的 cache 或 history，chrome.storage
+                        中的資料仍會保留。<br>
                         如果要刪除 chrome.storage 中的資料，僅能通過插件本身實現的刪除功能進行。</blockquote>
                     <h4>如何截圖</h4>
                     <p>有兩種方式：</p>
                     <ul>
                         <li>當你安裝本插件後，每次開啟Youtube影片時，將會自動在影片控制列加入截圖按鈕。可以透過按下該截圖按鈕進行截圖。</li>
-                        <li>或者透過插件的快捷鍵，預設為Ctrl + 向下鍵，快捷鍵可以在 <a href="chrome://extensions/shortcuts" target="_blank" rel="noopener noreferrer">Chrome Extensions Shortcuts</a> 進行自訂。</li>
+                        <li>或者透過插件的快捷鍵，預設為Ctrl + 向下鍵，快捷鍵可以在 <a href="chrome://extensions/shortcuts" target="_blank"
+                                rel="noopener noreferrer">Chrome Extensions Shortcuts</a> 進行自訂。</li>
                     </ul>
                 </div>
                 <h4 class="title is-5">使用者設定</h4>
@@ -207,6 +210,27 @@
                         </div>
                     </div>
 
+                    <div class="field is-horizontal">
+                        <div class="field-label is-normal">
+                            <label class="label">區分資料夾</label>
+                        </div>
+                        <div class="field-body">
+                            <div class="field">
+                                <label class="label"></label>
+                                <div class="control">
+                                    <label class="radio">
+                                        <input type="radio" id="folderType0" name="folder_type" value="none" checked>
+                                        不區分
+                                    </label>
+                                    <label class="radio">
+                                        <input type="radio" id="folderType1" name="folder_type" value="channel">
+                                        以頻道名稱區分
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Danger Zone -->
                     <div class="field is-horizontal">
                         <div class="field-label is-normal">
@@ -215,7 +239,7 @@
                         <div class="field-body">
                             <div class="field">
                                 <div class="control">
-                                    <button class="button is-danger">
+                                    <button class="button is-danger" id="btn-delete-all">
                                         <span class="icon is-small">
                                             <span class="material-symbols-outlined">
                                                 delete
