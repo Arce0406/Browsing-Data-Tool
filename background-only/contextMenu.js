@@ -1,5 +1,5 @@
 
-import * as Utils from "./utils.js";
+import * as Utils from "../scripts/utils.js";
 
 async function createYoutubeTabGroup() {
 

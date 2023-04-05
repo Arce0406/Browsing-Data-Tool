@@ -9,14 +9,14 @@ function isYoutube(url) {
 function screenShotInject(_tabID) {
     chrome.scripting.executeScript({
         target: { tabId: _tabID, allFrames: false },
-        files: ["./scripts/inject-screenshot.js"],
+        files: ["./scripts/content-scripts/inject-screenshot.js"],
     });
 }
 
 function screenShotInject2(_tabID) {
     chrome.scripting.executeScript({
         target: { tabId: _tabID, allFrames: false },
-        files: ["./scripts/inject-screenshot-button.js"],
+        files: ["./scripts/content-scripts/inject-screenshot-button.js"],
     });
 }
 
@@ -34,4 +34,4 @@ async function normalNotification(title, message, submessage) {
     );
 }
 
-export { _app_title, isYoutube, screenShotInject, screenShotInject2, normalNotification }
+export { _app_title, isYoutube, screenShotInject2, normalNotification }

@@ -1,10 +1,15 @@
-import * as MenuAPI from "./scripts/contextMenu.js";
+// import * as MenuAPI from "./background-only/contextMenu.js";
 import * as Utils from "./scripts/utils.js";
 import * as ScreenshotFiles from "./scripts/screenshotStorage.js"
 import * as UserSettingStorage from "./scripts/settingStorage.js";
 
 const filter = { url: [{ hostEquals: "www.youtube.com", pathEquals: "/watch" }, { hostEquals: "www.youtube.com", pathEquals: "/live" }] };
-function injectScript(details) { Utils.screenShotInject2(details.tabId); }
+function injectScript(details) {
+  chrome.scripting.executeScript({
+    target: { tabId: details.tabId, allFrames: false },
+    files: ["./scripts/content-scripts/inject-screenshot-button.js"],
+  });
+}
 
 /**
  * Click extension icon
@@ -91,3 +96,12 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
  */
 // MenuAPI.createScreenShotButton();
 // MenuAPI.createYoutubeTabGroup();
+
+
+async function test() {
+  await chrome.storage.local.remove("test");
+  const result = await chrome.storage.local.get(null);
+  console.log(result);
+}
+
+// test();
