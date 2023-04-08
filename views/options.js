@@ -1,5 +1,5 @@
-import * as ScreenshotStorage from "../../scripts/screenshotStorage.js";
-import * as UserSettingStorage from "../../scripts/settingStorage.js";
+import * as ScreenshotStorage from "../scripts/screenshotStorage.js";
+import * as UserSettingStorage from "../scripts/settingStorage.js";
 
 const area = document.getElementById("main-area");
 const usageP = document.getElementById("usage");

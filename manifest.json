@@ -29,7 +29,7 @@
         "open_in_tab": true
     },
     "background": {
-        "service_worker": "background.js",
+        "service_worker": "background2.js",
         "type": "module"
     },
     "action": {
@@ -53,6 +53,12 @@
                 "default": "Ctrl+Down"
             },
             "description": "Screenshot current view on Youtube page."
+        },
+        "youtube-timeline": {
+            "suggested_key": {
+                "default": "Ctrl+Up"
+            },
+            "description": "Managing current Youtube video timeline data."
         }
     }
 }

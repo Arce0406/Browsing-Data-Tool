@@ -1,14 +1,14 @@
 // import * as MenuAPI from "./background-only/contextMenu.js";
-import * as Utils from "./scripts/utils.js";
-import * as ScreenshotFiles from "./scripts/screenshotStorage.js"
-import * as UserSettingStorage from "./scripts/settingStorage.js";
+import * as Utils from "../scripts/utils.js";
+import * as ScreenshotFiles from "../scripts/screenshotStorage.js"
+import * as UserSettingStorage from "../scripts/settingStorage.js";
 
 const filter = { url: [{ hostEquals: "www.youtube.com", pathEquals: "/watch" }, { hostEquals: "www.youtube.com", pathEquals: "/live" }] };
 function injectScript(details) {
   chrome.scripting.executeScript({
     target: { tabId: details.tabId, allFrames: false },
     files: ["./scripts/content-scripts/inject-screenshot-button.js"],
-  });
+  }).then(() => console.log("script injected"));
 }
 
 /**
@@ -34,6 +34,14 @@ chrome.commands.onCommand.addListener(async (command, tab) => {
       return;
     }
     const response = await chrome.tabs.sendMessage(tab.id, { command: "screenshot" });
+    // console.log(response);
+  }
+  else if (command === "youtube-timeline") {
+    if (!Utils.isYoutube(tab.url)) {
+      Utils.normalNotification(Utils._app_title, "截圖功能僅能在 Youtube 頁面上執行。", "");
+      return;
+    }
+    const response = await chrome.tabs.sendMessage(tab.id, { command: "timeline" });
     // console.log(response);
   }
 });
@@ -72,6 +80,13 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   //   return true;
   // }
   else if (request.message === "delete") {
+    // console.log("start delete");
+    await ScreenshotFiles.remove(request.payload);
+    // console.log("end delete");
+    sendResponse(true);
+    return true;
+  }
+  else if (request.message === "youtubeEnded") {
     // console.log("start delete");
     await ScreenshotFiles.remove(request.payload);
     // console.log("end delete");

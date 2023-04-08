@@ -1,3 +1,17 @@
+/**
+ * Mointer message from extension
+ */
+chrome.runtime.onMessage.addListener(async function (request, sender, sendResponse) {
+    // console.log(sender.tab ? "from a content script:" + sender.tab.url : "from the extension", request.command);
+    if (request.command === "timeline") {
+        const result = ""; // await screenshot();
+        sendResponse({ result: result });
+        return true;
+    }
+});
+
+
+
 function findYoutubeVideoInfo() {
     // const titleElement = document.querySelector('#title.ytd-watch-metadata');
     const v = document.querySelector(".video-stream.html5-main-video");
@@ -72,27 +86,31 @@ function customButtonToolTip(text, isDisplay) {
 }
 
 function createTimelineAppendButton() {
+    // console.log("createTimelineAppendButton...");
     const _id = "ytb-timeline-append-button";
     if (document.getElementById(_id) === null) {
-        const ytbVideoScreenshotButton = document.createElement("button");
-        ytbVideoScreenshotButton.className = `${_id} ytp-button ytp-settings-button`;
-        ytbVideoScreenshotButton.id = _id;
-        ytbVideoScreenshotButton.setAttribute("data-title-no-tooltip", "Take a Screenshot");
-        ytbVideoScreenshotButton.setAttribute("aria-label", "時間軸鍵盤快速鍵↑");
-        ytbVideoScreenshotButton.setAttribute("aria-keyshortcuts", "↑");
-        ytbVideoScreenshotButton.setAttribute("aria-pressed", "false");
-        ytbVideoScreenshotButton.innerHTML = `<svg data-name="Layer 1" id="Layer_1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title/><path d="M12,14A6,6,0,1,0,6,8,6,6,0,0,0,12,14ZM12,3.8A4.2,4.2,0,1,1,7.8,8,4.2,4.2,0,0,1,12,3.8Zm2.61,3.4H12.8V5H11.2V8.8h3.41ZM20,20V17H18v3H13V17H11v3H6V17H4v3H1v2H23V20Z"/></svg>`;
+        const svg_id = "447";
+        const ytbTimelineButton = document.createElement("button");
+        ytbTimelineButton.className = `${_id} ytp-button ytp-settings-button`;
+        ytbTimelineButton.id = _id;
+        ytbTimelineButton.setAttribute("data-title-no-tooltip", "Take a Screenshot");
+        ytbTimelineButton.setAttribute("aria-label", "時間軸鍵盤快速鍵↑");
+        ytbTimelineButton.setAttribute("aria-keyshortcuts", "↑");
+        ytbTimelineButton.setAttribute("aria-pressed", "false");
+        ytbTimelineButton.innerHTML = `<svg height="100%" width="100%" fill-opacity="1" version="1.1" viewBox="-8 -8 40 40"><use class="ytp-svg-shadow" xlink:href="#ytp-id-${svg_id}"></use><path d="M12,14A6,6,0,1,0,6,8,6,6,0,0,0,12,14ZM12,3.8A4.2,4.2,0,1,1,7.8,8,4.2,4.2,0,0,1,12,3.8Zm2.61,3.4H12.8V5H11.2V8.8h3.41ZM20,20V17H18v3H13V17H11v3H6V17H4v3H1v2H23V20Z" fill="#fff" id="ytp-id-${svg_id}"/></svg>`;
 
         const ytpRightControls = document.querySelector("#movie_player .ytp-right-controls");
-        ytpRightControls.insertBefore(ytbVideoScreenshotButton, ytpRightControls.childNodes[1]);
+        ytpRightControls.insertBefore(ytbTimelineButton, ytpRightControls.childNodes[1]);
 
         const tooltip = customButtonToolTip("時間軸 (Ctrl + ↑ )", true);
         // document.body.appendChild(div1);
         const btn = document.getElementById(_id);
         btn.addEventListener("click", async (e) => {
-           
+            toggleTimelineFloatPanel();
+            const info = findYoutubeVideoInfo();
+            console.log(info);
         });
-        btn.addEventListener("mouseover", function (e) {           
+        btn.addEventListener("mouseover", function (e) {
             const rect = this.getBoundingClientRect();
             tooltip.style.left = rect.left - 25 + 'px';
             tooltip.style.top = rect.top - 40 + 'px';
@@ -104,3 +122,49 @@ function createTimelineAppendButton() {
         });
     }
 }
+
+
+const _timelimePanelID = "ytb-timeline-float-panel";
+
+function createTimelineFloatPanel() {
+    console.log("createTimelineFloatPanel...");
+    const panel = document.getElementById(_timelimePanelID);
+    if (!panel) {
+        const div = document.createElement("div");
+        div.id = _timelimePanelID;
+        div.style.position = "fixed";
+        div.style.bottom = "2rem";
+        div.style.right = "3rem";
+        div.style.padding = "1.5rem";
+        div.style.zIndex = "9999";
+        div.style.display = "none";
+        div.style.backgroundColor = "white";
+        div.style.borderRadius = "5px";
+
+        const p = document.createElement("p");
+        // p.textContent = "Screen successed, also copied to clipbaoard.";
+        p.textContent = "截圖成功, 並且已複製到剪貼簿";
+        p.style.marginTop = "1rem";
+        p.style.textAlign = "center";
+
+        div.appendChild(p);
+        document.body.appendChild(div);
+    }
+}
+
+function toggleTimelineFloatPanel() {
+    const panel = document.getElementById(_timelimePanelID);
+    console.log(panel);
+    if (!panel) return;
+    console.log(panel.style.display);
+    if (panel.style.display === "none") {
+        panel.style.display = "block";
+    } else {
+        panel.style.display = "none";
+    }
+}
+
+
+
+createTimelineFloatPanel();
+createTimelineAppendButton();

@@ -1,0 +1,287 @@
+:root {
+  --navbar-height: 56px;
+  --sidebar-width: 220px;
+  --main-color: #f6f4f2;
+  --sub-color: #a6a7a8;
+  --hachi-color: #ffe08a;
+
+  --dark-mode-font-color: #f6f4f2;
+  --dark-mode-border-color: #3c3d41;
+  --dark-mode-bg-main-color: black;
+  --dark-mode-bg-sub-color: #212225;
+
+  --light-mode-font-color: #4a4a4a;
+  --light-mode-border-color: #dbdbdb;
+  --light-mode-bg-main-color: #f5f5f5;
+  --light-mode-bg-sub-color: white;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body.dark-mode {
+  background-color: var(--dark-mode-bg-main-color) !important;
+  color: var(--dark-mode-font-color) !important;
+}
+
+body.dark-mode :is(h1, h2, h3, h4, h5, h6, .title) {
+  color: var(--main-color) !important;
+}
+
+body.dark-mode p {
+  color: var(--sub-color) !important;
+}
+
+body.light-mode {
+  background-color: var(--light-mode-bg-main-color) !important;
+  color: var(--light-mode-font-color) !important;
+}
+
+body.dark-mode a {
+  color: var(--hachi-color);
+}
+
+/* 
+ * Google Font START 
+ */
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 48;
+}
+
+/* Google Font END */
+
+/* 
+ * Tob bar START
+ */
+
+body.dark-mode .topbar {
+  border-bottom: 1px solid var(--dark-mode-border-color) !important;
+  /* color: var(--dark-mode-font-color) !important; */
+  border-color: var(--dark-mode-border-color) !important;
+}
+body.dark-mode > .topbar > * {
+  background-color: var(--dark-mode-bg-main-color) !important;
+  color: var(--dark-mode-font-color) !important;
+  border-color: var(--dark-mode-border-color) !important;
+}
+
+body.light-mode > .topbar {
+  border-bottom: 1px solid var(--light-mode-border-color) !important;
+}
+body.light-mode > .topbar > * {
+  background-color: var(--light-mode-bg-main-color) !important;
+  color: var(--light-mode-font-color) !important;
+  border-color: var(--light-mode-border-color) !important;
+}
+
+
+.topbar {
+  background-color: transparent;
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: var(--navbar-height);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0;
+  padding: 0 1.25rem;
+}
+
+body.has-sidebar > .topbar{
+  left: var(--sidebar-width);
+}
+
+.topbar-start {
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-start;
+  margin-right: auto;
+}
+
+.topbar-item {
+  cursor: pointer;
+  position: relative;
+  line-height: 1.5;
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+.topbar-link {
+  cursor: pointer;
+}
+
+/* Tob bar END */
+
+/* 
+ * Side bar START 
+ */
+
+body.dark-mode > .sidebar {
+  background-color: var(--dark-mode-bg-sub-color) !important;
+  color: var(--dark-mode-font-color) !important;
+}
+
+body.light-mode > .sidebar {
+  background-color: var(--light-mode-bg-sub-color) !important;
+  color: var(--light-mode-font-color) !important;
+}
+
+.sidebar {
+  /* background-color: #f6f4f2;
+  color: #4a4a4a; */
+  font-size: 0.9em;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: var(--sidebar-width);
+  display: flex;
+  flex-direction: column;
+
+  margin: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* box-shadow: 0 0.5em 1em -0.125em rgba(10,10,10,.1), 0 0 0 1px rgba(10,10,10,.02); */
+  /* border-radius: 6px; */
+}
+
+.sidebar-brand {
+  align-items: stretch;
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+  height: var(--navbar-height);
+  margin-bottom: 1.5rem;
+  /* margin-left: 1.25rem; */
+}
+
+.sidebar-brand-item {
+  display: flex;
+  align-items: center;
+  flex-grow: 0;
+  flex-shrink: 0;
+  /* margin-left: 0.5rem; */
+}
+
+.sidebar-burger {
+  height: var(--navbar-height);
+  width: var(--navbar-height);
+}
+
+.menu .menu-label:not(:first-child) {
+  margin-top: 1.5rem;
+}
+
+body.dark-mode .menu a {
+  color: var(--main-color) !important;
+}
+body.light-mode .menu a {
+  color: var(--light-mode-font-color) !important;
+}
+
+body.dark-mode .menu a.is-active {
+  background-color: var(--hachi-color) !important;
+  color: var(--light-mode-font-color) !important;
+}
+body.light-mode .menu a.is-active {
+  background-color: var(--hachi-color) !important;
+  color: var(--light-mode-font-color) !important;
+}
+
+body.dark-mode .menu a:hover {
+  background-color: var(--dark-mode-bg-main-color);
+  color: var(--dark-mode-font-color);
+}
+
+/* Side bar END */
+
+/* 
+ * Dashboard START 
+ */
+
+body.has-sidebar {
+  padding-left: var(--sidebar-width);
+}
+
+body.has-topbar {
+  padding-top: var(--navbar-height);
+}
+
+.dashboard-body {
+  position: relative;
+  display: block;
+  /* z-index: -1; */
+  padding: 1.5rem;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.menu-page {
+  display: none;
+  /* background-color: #fff; */
+  border-radius: 6px;
+  /* box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.02); */
+  color: #4a4a4a;
+  padding: 2rem;
+}
+
+.menu-page.is-active {
+  display: block;
+}
+
+body.dark-mode .menu-page {
+  background-color: var(--dark-mode-bg-sub-color);
+}
+/* body.dark-mode .menu-page * {
+  color: var(--dark-mode-font-color) !important;
+} */
+
+body.light-mode .menu-page {
+  background-color: var(--light-mode-bg-sub-color);
+  color: var(--light-mode-font-color) !important;
+}
+
+/* Dashboard END */
+
+.w-25 {
+  width: 25% !important;
+}
+
+.w-50 {
+  width: 50% !important;
+}
+
+.w-75 {
+  width: 75% !important;
+}
+
+.w-100 {
+  width: 100% !important;
+}
+
+.h-25 {
+  height: 25% !important;
+}
+
+.h-50 {
+  height: 50% !important;
+}
+
+.h-75 {
+  height: 75% !important;
+}
+
+.h-100 {
+  height: 100% !important;
+}

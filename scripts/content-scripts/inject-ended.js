@@ -2,7 +2,7 @@ function onended(video) {
     video.addEventListener("ended", async (event) => {
         await chrome.runtime.sendMessage(
             {
-                "message": "ended",
+                "message": "youtubeEnded",
                 "payload": {
                     "current": new Date(),
                     // "tabid": "",

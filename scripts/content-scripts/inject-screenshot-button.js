@@ -1,4 +1,3 @@
-let isYoutubeScreenshotDownloadDirectly = false;
 
 /**
  * Mointer message from extension
@@ -20,7 +19,7 @@ async function userSetting() {
     const k = "honeybeesclub_user_setting";
     let r = await chrome.storage.local.get(k);
     r = r[k];
-    isYoutubeScreenshotDownloadDirectly = r.download.type === "auto" ? true : false;
+    return (r.download.type === "auto" ? true : false);
     // console.log(result, Date.now());
 }
 
@@ -172,7 +171,8 @@ async function screenshot() {
     navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
 
     // Download 
-    if(isYoutubeScreenshotDownloadDirectly) downloadBackend(info);
+    const isYoutubeScreenshotDownloadDirectly = await userSetting();
+    if(isYoutubeScreenshotDownloadDirectly) await downloadBackend(info);
     // downloadFrontend(info);
 
     // Show toast
@@ -267,5 +267,5 @@ function createTakeVideoScreenshotButton() {
     }
 }
 
-userSetting();
+
 createTakeVideoScreenshotButton();

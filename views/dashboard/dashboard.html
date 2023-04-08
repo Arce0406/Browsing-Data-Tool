@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulma components | Dashboard</title>
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="dashboard.css">
+    <script src="dashboard.js" type="module"></script>
+</head>
+<body class="has-topbar has-sidebar light-mode">
+    <!-- Navbar -->
+    <div class="topbar">
+        <h2 class="title is-4 mb-0 is-flex-grow-1">Dashboard</h2>
+        <button class="button" id="btn-mode">
+            <span class="icon is-small">
+                <span class="material-symbols-outlined">
+                    dark_mode
+                </span>
+            </span>
+        </button>
+        <!-- <div class="control has-icons-left mr-2">
+            <input class="input is-small" type="text" placeholder="text">
+            <span class="icon is-left">
+                <span class="material-symbols-outlined">
+                    search
+                </span>
+            </span>
+        </div>
+        <div class="control has-icons-left">
+            <div class="select is-small">
+                <select>
+                    <option selected>Language</option>
+                    <option>Chinese</option>
+                    <option>English</option>
+                    <option>Japanese</option>
+                </select>
+            </div>
+            <div class="icon is-left">
+                <span class="material-symbols-outlined">
+                    language
+                </span>
+            </div>
+        </div> -->
+    </div>
+
+    <!-- Left Side -->
+    <div class="sidebar">
+        <div class="sidebar-brand">
+            <a class="sidebar-brand-item" href="https://bulma.io">
+                <img src="https://bulma.io/images/bulma-logo.png" width="112" height="28">
+            </a>
+            <!-- <a role="button" class="navbar-burger sidebar-burger" aria-label="menu" aria-expanded="false"
+                data-target="navbarBasicExample">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a> -->
+        </div>
+
+        <aside class="menu px-5">
+            <p class="menu-label">
+                General
+            </p>
+            <ul class="menu-list">
+                <li><a class="is-active" data-target="page-intro">Dashboard</a></li>
+                <li><a data-target="page-log">Changelog</a></li>
+            </ul>
+            <p class="menu-label">
+                Membership
+            </p>
+            <ul class="menu-list">
+                <li><a data-target="page-discord">Account</a></li>
+                <li><a data-target="page-verify">Tutorial</a></li>
+            </ul>
+            <p class="menu-label">
+                Youtube Extendtion
+            </p>
+            <ul class="menu-list">
+                <li><a data-target="page-screenshot">Screenshots</a></li>
+                <li><a data-target="page-timeline">Timelines</a></li>
+                <li><a data-target="page-notify">Notify</a></li>
+            </ul>
+            <p class="menu-label">
+                Others
+            </p>
+            <ul class="menu-list">
+                <li><a data-target="page-ddtools">DD Tools</a></li>
+                <li><a data-target="page-nitendo">Nintendo Switch Capture</a></li>
+                <li><a data-target="page-twittercc">Twitter Spaces CC Expander</a></li>
+            </ul>
+        </aside>
+
+    </div>
+
+    <!-- Right Side -->
+    <main class="dashboard-body">
+        <!-- <nav class="breadcrumb" aria-label="breadcrumbs">
+            <ul>
+                <li><a href="#">Bulma</a></li>
+                <li class="is-active"><a href="#" aria-current="page">Breadcrumb</a></li>
+            </ul>
+        </nav> -->
+
+        <!-- Intro -->
+        <div id="page-intro" class="menu-page is-active">
+            <div class="content">
+                <h4>Introduction</h4>
+                <p>
+                    『HACHI Membership Checker』是 <a href="https://discord.gg/honeybeesyoukoso">HoneyBEES Club (HACHI
+                        中文群)</a>
+                    專用的 Chrome 瀏覽器插件。
+                </p>
+                <p>主要功能為「提供簡單能在Discord領取會員身分組」的方法，並作為其他工具的入口。</p>
+                <p>
+                    如若使用上有任何問題，請至 Discord Server 透過 <span class="has-text-info">#聯絡我們</span> 詢問。
+                </p>
+                <hr>
+                <h4>About</h4>
+                <p>
+                    『HoneyBEES Club (HACHI 中文群)』為 <a href="https://www.youtube.com/c/HACHIVSinger">HACHI</a>
+                    的非官方中文粉絲社群。
+                </p>
+                <p>Discord 連結：
+                    <a href="https://discord.gg/honeybeesyoukoso">https://discord.gg/honeybeesyoukoso</a>
+                </p>
+                <p>開發者：Arce0406 <a href="https://twitter.com/Arce0406">(Twitter)</a></p>
+            </div>
+        </div>
+
+        <!-- Log -->
+        <div id="page-log" class="menu-page">
+            <div class="content">
+                <h4>Change Log</h4>
+                <p class="has-text-grey">This page summarizes the changes between official stable releases of 『HACHI Membership Checker』.</p>
+
+                <h5>0.0.1.4</h5>
+                <p class="has-text-grey">🕙 2023-04-??</p>
+                <ul>
+                    <li>優化 Youtube 截圖功能</li>
+                    <li></li>
+                </ul>
+
+
+                <h5>0.0.1.3</h5>
+                <p class="has-text-grey">🕙 2022-11-20</p>
+                <ul>
+                    <li>
+                        <p>
+                            <span>增加 右鍵選單功能：Youtube 截圖，在 Youtube 分頁上執行時，會截圖當下的影片畫面並開始下載。</span>
+                            <br>
+                            <span>(檔案類型為png，圖片尺寸會根據解析度變動，例如：1080p為1920*1080，720p為1280*720。)</span>
+                        </p>
+                    </li>
+                    <li>增加 右鍵選單功能：Youtube 分頁群組，會將當前所有開啟的Youtube分頁都集中到一個分頁群組上。</li>
+                </ul>
+
+                <h5>0.0.1.2</h5>
+                <p class="has-text-grey">🕙 2022-11-20</p>
+                <ul>
+                    <li>增加 Change Log 頁面。</li>
+                    <li>調整 Nintendo Switch Capture 的相關說明</li>
+                </ul>
+
+                <h5>0.0.1.1</h5>
+                <p class="has-text-grey">🕙 2022-11-17</p>
+                <ul>
+                    <li>修正 Twitter Spaces CC Expander 毫無作用的問題。<br>(如果更新為0.0.1.1版本後功能仍然失效，請先移除插件後再重新安裝，應能解決問題)</li>
+                </ul>
+
+                <h5>0.0.1.0</h5>
+                <p class="has-text-grey">🕙 2022-11-12</p>
+                <ul>
+                    <li>增加說明頁面。</li>
+                    <li>增加錯誤提示。</li>
+                    <li>修改 Membership Checker 驗證流程。</li>
+                    <li>增加 Twitter Spaces CC Expander 功能。</li>
+                    <li>增加其他群內工具(DD Tools、Nintendo Switch Capture)之說明。</li>
+                </ul>
+
+                <h5>0.0.0.1</h5>
+                <p class="has-text-grey">🕙 2022-04-14</p>
+                <ul>
+                    <li>Beta 版驗證工具發布，驗證 Youtube 的 HACHI 會員、並可於 Discord 群內領取對應身分組。</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Discord Account -->
+        <div id="page-discord" class="menu-page">
+            <div class="content">
+                <h4>Discord Login</h4>
+                <p class="has-text-grey">Log with Discord OAuth2 to get your Discord account info.</p>
+                <p class="has-text-grey">If you are already login, go to <a
+                        href="https://www.youtube.com/paid_memberships">Youtube - Purchases and memberships page</a>
+                </p>
+            </div>
+
+            <div class="box has-background-light">
+                <div class="content">
+                    <h5>Disocrd Account Info</h5>
+                    <p id="help" class="help is-danger"></p>
+                </div>
+
+                <div class="field">
+                    <label class="label">User Name</label>
+                    <div class="control">
+                        <input id="title" class="input" type="text" placeholder="e.g. Arce#1234" readonly>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">User ID</label>
+                    <div class="control">
+                        <input id="subtitle" class="input" type="text" placeholder="e.g. 123456789011121314"
+                            readonly>
+                    </div>
+                </div>
+
+                <div class="field is-grouped is-grouped-right">
+                    <div class="control">
+                        <button id="btn_sign" class="button is-link" data-mode="login">Login with Discord</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- How to verify your membership -->
+        <div id="page-verify" class="menu-page">
+            <div class="content">
+                <h4>How to verify your membership</h4>
+                <hr>
+                <h5>支援度</h5>
+                <ul>
+                    <li>支援的Youtube頁面語言包括：日本語、English 與 所有中文類型，請確認 Youtube 頁面的語言類型是上述類型。</li>
+                    <li>會員驗證功能僅支援 Chrome 瀏覽器，即使安裝到其他瀏覽器也無法進行會員驗證。</li>
+                    <p>本插件使用了作業系統內建的通知功能，Windows使用者請前往 設定 > 系統 > 通知與動作 確認使否有開啟Chrome瀏覽器的通知顯示。</p>
+                </ul>
+                <h5>操作說明</h5>
+                <ol>
+                    <li>請先在插件中「Discord Account Info」透過 Discord OAuth2 登入，讓插件取得您的 Discord username、id 與
+                        discriminator(井字號後的4位數字)</li>
+                    <li>確認插件取得帳號資訊後，請前往 Youtube <a href="https://www.youtube.com/paid_memberships">購買內容與會員資格。</a>
+                    </li>
+                    <li>請確認插件的燈號(參考下圖)，如出現黃色燈號即可進行下個步驟，如果遲遲未出現請嘗試重新整理頁面或插件。</li>
+                    <figure class="image">
+                        <img src="../images/tutorial/Membership_a1.png">
+                    </figure>
+                    <li>找到 HACHI 的會員區塊，並展開它(如下圖所示)，等候區塊出現完整的會員購買資訊。</li>
+                    <figure class="image">
+                        <img src="../images/tutorial/Membership_a2.png">
+                    </figure>
+                    <li>此時再度觀察燈號，若出現綠燈表示驗證完成；若出現紅燈，請到系統通知確認錯誤訊息為何，並嘗試重新整理頁面再次執行驗證，或是聯絡管理員。</li>
+                    <figure class="image">
+                        <img src="../images/tutorial/Membership_a3.png">
+                    </figure>
+                </ol>
+
+
+            </div>
+        </div>
+
+        <!-- Twitter Spaces CC Expander -->
+        <div id="page-twittercc" class="menu-page">
+            <div class="content">
+                <h4>Twitter Spaces CC Expander</h4>
+                <p class="has-text-grey">加大 Twitter Spaces 的CC字幕區塊 (僅對於網頁版有效)。</p>
+                <p class="has-text-grey">Enlarge the caption area of Twitter spaces, only works on Twitter (browser
+                    page) for pc.</p>
+                <hr>
+                <h5>How to use</h5>
+                <ol>
+                    <li>開始播放 Twitter Spaces (直播中或存檔皆可)，並且開啟CC字幕，並等待CC字幕出現。(如 Step 1 所示)</li>
+                    <li>在頁面上任意位置點按滑鼠右鍵，找到並點擊「執行 Twitter Spaces CC Expander」選項。(參考 Step 2 所示)</li>
+                    <li>若一切正常，則會出現如 Step 3 的畫面，CC字幕獨立於 Spaces 語音區域的左方。</li>
+                </ol>
+                <figure class="image">
+                    <img src="../images/tutorial/Twitter_CC_Expander.png">
+                </figure>
+                <h5>Notice</h5>
+                <p>本插件使用了作業系統內建的通知功能，Windows使用者請前往 設定 > 系統 > 通知與動作 確認使否有開啟Chrome瀏覽器的通知顯示。</p>
+                <p>未開啟通知功能仍可以正常使用，但在出現錯誤時將無法看到詳細的錯誤訊息。</p>
+                <ul>
+                    <li>若在Expander正常執行完後，調整了Twitter視窗的大小、縮小Spaces通知列...，可能導致分離的CC字幕區塊被隱藏，此時僅需再次執行一次步驟即可。</li>
+                    <li>若在非 Twitter 頁面上執行，則會跳出 Error Type 1 的訊息：「Twitter Spaces CC Expander 僅能在 Twitter 上執行」。</li>
+                    <li>若已在Twitter Spaces播放狀態，但CC字幕尚未出現，則會跳出 Error Type 2：「Twitter Spaces CC Expander
+                        找不到字幕區塊，請等候字幕出現後再執行本指令。」</li>
+                    <li>若一切正常，則會出現如 Success 的提示訊息，告知執行已經完成。</li>
+                </ul>
+                <figure class="image">
+                    <img src="../images/tutorial/Twitter_CC_Expander2.png">
+                </figure>
+            </div>
+        </div>
+
+        <!-- Nintendo Switch Capture -->
+        <div id="page-nitendo" class="menu-page">
+            <div class="content">
+                <h4>Nintendo Switch Capture</h4>
+                <p>Display the game screen of Nintendo Switch on the web page.</p>
+                <p>Link：<a target="_blank"
+                        href="https://arce0406.github.io/Nintendo-Switch-Capture">https://arce0406.github.io/Nintendo-Switch-Capture</a>
+                </p>
+                <hr>
+                <h5>Document</h5>
+                <dl>
+                    <p>中文版：<a target="_blank"
+                            href="https://github.com/Arce0406/Nintendo-Switch-Capture/blob/main/README.md">https://github.com/Arce0406/Nintendo-Switch-Capture/blob/main/README.md</a>
+                    </p>
+                    <p>English：<a target="_blank"
+                            href="https://github.com/Arce0406/Nintendo-Switch-Capture/blob/main/README-en.md">https://github.com/Arce0406/Nintendo-Switch-Capture/blob/main/README-en.md</a>
+                    </p>
+                    <p>日本語版：<a target="_blank"
+                            href="https://github.com/Arce0406/Nintendo-Switch-Capture/blob/main/README-jp.md">https://github.com/Arce0406/Nintendo-Switch-Capture/blob/main/README-jp.md</a>
+                    </p>
+                </dl>
+            </div>
+        </div>
+
+        <!-- DD Tools -->
+        <div id="page-ddtools" class="menu-page">
+            <div class="content">
+                <h4>DD Tools</h4>
+                <p class="has-text-grey">儲存常用的打call符號，並可以搜尋與一鍵複製。</p>
+                <p class="has-text-grey">注意，資料是保存在瀏覽器上，並不會自動透過Google帳號同步，並且大小上限約為5MB(約可儲存6萬字)。</p>
+            </div>
+            <hr>
+            <p>
+                網站連結：<a target="_blank"
+                    href="https://arce0406.github.io/DD-Tools/">https://arce0406.github.io/DD-Tools/</a>
+            </p>
+        </div>
+
+        <div id="page-screenshot" class="menu-page"></div>
+        <div id="page-timeline" class="menu-page"></div>
+        <div id="page-notify" class="menu-page"></div>
+
+    </main>
+</body>
+</html>
