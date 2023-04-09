@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- Theme CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+        }
+
+        body {
+            background-color: gainsboro;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings:
+                'FILL' 0,
+                'wght' 400,
+                'GRAD' 0,
+                'opsz' 48
+        }
+
+        #yt-timeline-float-panel {
+            background-color: white;
+            border-radius: 5px;
+            height: 400px;
+            width: 300px;
+            overflow: hidden;
+            position: fixed;
+            padding: 0.5rem 1.5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="yt-timeline-float-panel" class="is-flex is-flex-direction-column">
+
+        <div class="yt-timelines is-flex is-justify-content-center is-align-items-center">
+            <p class="title is-6 mb-0 is-flex-grow-1">時間軸</p>
+            <button class="button is-white">
+                <span class="icon is-small">
+                    <span class="material-symbols-outlined">
+                        export_notes
+                    </span>
+                </span>
+            </button>
+        </div>
+        <hr>
+        <div class="yt-timelines is-flex-grow-1 is-flex is-flex-direction-column">
+            <div class="yt-timeline is-flex is-align-items-center">
+                <a href="#">00:00:00</a>
+                <p class="ml-2">Start</p>
+                <div class="buttons is-flex-grow-1 is-justify-content-flex-end">
+                    <button class="button is-danger is-inverted">
+                        <span class="icon is-small">
+                            <span class="material-symbols-outlined">
+                                delete
+                            </span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+            <div class="yt-timeline is-flex is-align-items-center">
+                <a href="#">00:00:00</a>
+                <p class="ml-2">Start</p>
+                <div class="buttons is-flex-grow-1 is-justify-content-flex-end">
+                    <button class="button is-danger is-inverted">
+                        <span class="icon is-small">
+                            <span class="material-symbols-outlined">
+                                delete
+                            </span>
+                        </span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+        
+        <hr>
+
+        <div class="yt-timeline-buttons is-flex is-align-items-center block mb-2">
+            <div class="field has-addons">
+                <p class="control">
+                    <!-- <a class="button is-static">
+                        00:00
+                    </a> -->
+                    <input class="input style-scope yt-live-chat-text-input-field-renderer" type="text"
+                    placeholder="00:00">
+                </p>
+                <p class="control">
+                    <input class="input style-scope yt-live-chat-text-input-field-renderer" type="text"
+                        placeholder="Title">
+                </p>
+                <p class="control">
+                    <a class="button">
+                        <span class="icon is-small">
+                            <span class="material-symbols-outlined">
+                                add
+                            </span>
+                        </span>
+                    </a>
+                </p>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

@@ -4,43 +4,23 @@
 chrome.runtime.onMessage.addListener(async function (request, sender, sendResponse) {
     // console.log(sender.tab ? "from a content script:" + sender.tab.url : "from the extension", request.command);
     if (request.command === "timeline") {
+        readData();
+        toggleTimelineFloatPanel(false);      
         const result = ""; // await screenshot();
+        sendResponse({ result: result });
+        return true;
+    }
+    else if (request.command === "update") {
+        // 如果頁面連結有變化，則需要重整 timeline 資料        
+        readData();
+        toggleTimelineFloatPanel(true);     
+        const result = ""; // await screenshot();   
         sendResponse({ result: result });
         return true;
     }
 });
 
-
-
-function findYoutubeVideoInfo() {
-    // const titleElement = document.querySelector('#title.ytd-watch-metadata');
-    const v = document.querySelector(".video-stream.html5-main-video");
-    const upload_info = document.querySelector('#top-row > #owner > ytd-video-owner-renderer > #upload-info > #channel-name > #container > #text-container > #text > a');
-    return {
-        "created": new Date(Date.now()).toISOString(),
-        "title": document.querySelector('#title.ytd-watch-metadata > h1').innerText,
-        "video": v,
-        "details": {
-            "url": window.location.href,
-            "current": v.currentTime,
-        },
-        "channel": {
-            "name": upload_info.textContent,
-            "url": upload_info.getAttribute("href"),
-            // "thumbnail": upload_info.children[0].children[0].getAttribute("src")
-        },
-        "size": {
-            "width": v.videoWidth,
-            "height": v.videoHeight
-        },
-    };
-}
-
-function timelineEditor() {
-
-}
-
-function timelinePreview() {
+function readData(){
 
 }
 
@@ -85,7 +65,7 @@ function customButtonToolTip(text, isDisplay) {
     return div1;
 }
 
-function createTimelineAppendButton() {
+function generateTimelineAppendButton() {
     // console.log("createTimelineAppendButton...");
     const _id = "ytb-timeline-append-button";
     if (document.getElementById(_id) === null) {
@@ -106,9 +86,11 @@ function createTimelineAppendButton() {
         // document.body.appendChild(div1);
         const btn = document.getElementById(_id);
         btn.addEventListener("click", async (e) => {
+            const v = document.querySelector(".video-stream.html5-main-video");
+            // const url = window.location.href;
+            const currentTime = new Date(v.currentTime * 1000).toISOString().substring(11, 19)
+            document.getElementById("timeline-timestamp").value = currentTime;
             toggleTimelineFloatPanel();
-            const info = findYoutubeVideoInfo();
-            console.log(info);
         });
         btn.addEventListener("mouseover", function (e) {
             const rect = this.getBoundingClientRect();
@@ -123,48 +105,226 @@ function createTimelineAppendButton() {
     }
 }
 
+/**
+ * 
+ */
 
-const _timelimePanelID = "ytb-timeline-float-panel";
+function _createTimelineButton() {
+    const btn = document.createElement("button");
+    btn.style.backgroundColor = "white";
+    btn.style.borderColor = "transparent";
+    btn.style.color = "#0a0a0a";
+    btn.style.cursor = "pointer";
+    btn.style.justifyContent = "center";
+    btn.style.display = "inline-flex";
+    btn.style.textAlign = "center";
+    btn.style.alignItems = "center";
+    btn.style.whiteSpace = "nowrap";
+    // btn.style.lineHeight = "1.5";
+    btn.style.height = "2.5em";
+    // btn.style.padding = "1em";
+    return btn;
+}
 
-function createTimelineFloatPanel() {
-    console.log("createTimelineFloatPanel...");
+function _createTimelineItme(time, title) {
+    const div = document.createElement("div");
+    div.className = "yt-timeline";
+    div.setAttribute("data-time", time);
+    div.setAttribute("data-title", title);
+    div.style.display = "flex";
+    div.style.alignItems = "center";
+
+    const a = document.createElement("a");
+    a.href = "#";
+    a.textContent = time;
+
+    const p = document.createElement("p");
+    p.style.marginLeft = "0.5rem"
+    p.textContent = title;
+
+    const btn_wrapper = document.createElement("div");
+    btn_wrapper.style.display = "flex";
+    btn_wrapper.style.alignItems = "center";
+    btn_wrapper.style.flexGrow = "1";
+    btn_wrapper.style.justifyContent = "flex-end";
+    btn_wrapper.style.marginBottom = "-0.5rem";
+
+    const btn = _createTimelineButton();
+    btn.style.color = "#f14668";
+    btn.style.marginBottom = "0.5rem";
+    btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960" height="16" width="16"><path d="M261 936q-24.75 0-42.375-17.625T201 876V306h-41v-60h188v-30h264v30h188v60h-41v570q0 24-18 42t-42 18H261Zm438-630H261v570h438V306ZM367 790h60V391h-60v399Zm166 0h60V391h-60v399ZM261 306v570-570Z" /></svg>`;
+    btn.addEventListener("click", function () {
+        if (confirm("確定要刪除此項timestamp?")) document.getElementById("yt-timelines").removeChild(div);
+    });
+
+    btn_wrapper.appendChild(btn);
+    div.appendChild(a);
+    div.appendChild(p);
+    div.appendChild(btn_wrapper);
+
+    return div;
+}
+
+function _createFloatTimelineHeader() {
+    const header = document.createElement("div");
+    header.id = "yt-timeline-header";
+    header.style.display = "flex";
+    header.style.justifyContent = "center";
+    header.style.alignItems = "center";
+
+    const p = document.createElement("p");
+    p.style.flexGrow = "1";
+    p.style.display = "block";
+    p.style.color = "#363636";
+    p.style.fontSize = "1rem";
+    p.style.fontWeight = "600";
+    p.style.lineHeight = "1.125";
+    p.style.margin = "0";
+    p.style.marginBlockStart = "1em";
+    p.style.marginBlockEnd = "1em";
+    p.style.padding = "0";
+    p.textContent = "時間軸";
+    header.appendChild(p);
+
+    const btn = _createTimelineButton();
+    btn.addEventListener("click", function () {
+        const str = Array
+            .from((document.querySelectorAll("#yt-timelines .yt-timeline") || []))
+            .map(x => `${x.getAttribute("data-time")} ${x.getAttribute("data-title")}`)
+            .join("\r\n");
+        navigator.clipboard.writeText(str);
+        alert("Timeline has copied.");
+    });
+    btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960" height="16" width="16"><path d="m661 920 117-117v99h30V752H658v30h99L640 899l21 21Zm-481 16q-24.75 0-42.375-17.625T120 876V276q0-24.75 17.625-42.375T180 216h600q24.75 0 42.375 17.625T840 276v329q-14-8-29.5-13t-30.5-8V276H180v600h309q4 16 9.023 31.172Q503.045 922.345 510 936H180Zm0-107v47-600 308-4 249Zm100-53h211q4-16 9-31t13-29H280v60Zm0-170h344q14-7 27-11.5t29-8.5v-40H280v60Zm0-170h400v-60H280v60Zm452.5 579q-77.5 0-132.5-55.5T545 828q0-78.435 54.99-133.718Q654.98 639 733 639q77 0 132.5 55.282Q921 749.565 921 828q0 76-55.5 131.5t-133 55.5Z" /></svg>`;
+    header.appendChild(btn);
+
+    return header;
+}
+
+function _createFloatTimelineFooter() {
+
+    function input() {
+        const input = document.createElement("input");
+        input.type = "text";
+        input.style.borderBottomRightRadius = "0";
+        input.style.borderTopRightRadius = "0";
+        input.style.maxWidth = "100%";
+        input.style.height = "2.5em";
+        // input.style.width = "100%";
+        input.style.boxShadow = "inset 0 0.0625em 0.125em rgba(10,10,10,.05)";
+        input.style.backgroundColor = "white";
+        input.style.border = "1px solid #dbdbdb";
+        input.style.borderRadius = "4px";
+        input.style.color = "#363636";
+        input.style.fontSize = "1rem";
+        input.style.lineHeight = "1.5";
+        input.style.display = "inline-flex";
+        input.style.alignItems = "center";
+        input.style.justifyContent = "flex-start";
+
+        return input;
+    }
+
+    const footer = document.createElement("div");
+    footer.id = "yt-timeline-footer";
+    footer.style.display = "flex";
+    footer.style.alignItems = "center";
+    footer.style.marginBottom = "0.5rem";
+
+    const div = document.createElement("div");
+    div.style.display = "flex";
+    div.style.justifyContent = "flex-start"
+
+    const c1 = document.createElement("p");
+    const tb1 = input();
+    tb1.id = "timeline-timestamp";
+    tb1.size = "4";
+    tb1.style.width = "auto";
+    c1.appendChild(tb1);
+    footer.appendChild(c1);
+
+    const c2 = document.createElement("p");
+    c2.style.flexGrow = "1";
+    const tb2 = input();
+    tb2.id = "timeline-title";
+    tb2.style.width = "97%";
+    c2.appendChild(tb2);
+    footer.appendChild(c2);
+
+    const btn = _createTimelineButton();
+    // btn.style.flexGrow = "1";
+    // btn.style.justifyContent = "flex-end";
+    btn.addEventListener("click", function () {
+        if (!tb1.value || !tb2.value) return;
+        const item = _createTimelineItme(tb1.value, tb2.value);
+        const parent = document.getElementById("yt-timelines");
+        parent.appendChild(item);
+        tb1.value = "";
+        tb2.value = "";
+    });
+
+    btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960" height="16" width="16"><path d="M450 856V606H200v-60h250V296h60v250h250v60H510v250h-60Z" /></svg>`;
+    footer.appendChild(btn);
+
+    return footer;
+}
+
+function createFloatTimelinePanel() {
+    const _timelimePanelID = "yt-timeline-float-panel";
     const panel = document.getElementById(_timelimePanelID);
     if (!panel) {
-        const div = document.createElement("div");
-        div.id = _timelimePanelID;
-        div.style.position = "fixed";
-        div.style.bottom = "2rem";
-        div.style.right = "3rem";
-        div.style.padding = "1.5rem";
-        div.style.zIndex = "9999";
-        div.style.display = "none";
-        div.style.backgroundColor = "white";
-        div.style.borderRadius = "5px";
+        // yt-timeline-float-panel
+        const panel = document.createElement("div");
+        panel.id = _timelimePanelID;
+        panel.style.backgroundColor = "white";
+        panel.style.borderRadius = "5px";
+        panel.style.height = "500px";
+        panel.style.width = "300px";
+        panel.style.position = "fixed";
+        panel.style.overflow = "hidden";
+        panel.style.bottom = "2rem";
+        panel.style.right = "3rem";
+        panel.style.margin = "auto";
+        panel.style.padding = "0.5rem 1.5rem";
+        panel.style.zIndex = "9999";
+        panel.style.display = "none";
+        panel.style.flexDirection = "column";
 
-        const p = document.createElement("p");
-        // p.textContent = "Screen successed, also copied to clipbaoard.";
-        p.textContent = "截圖成功, 並且已複製到剪貼簿";
-        p.style.marginTop = "1rem";
-        p.style.textAlign = "center";
+        // header - yt-timeline-buttons
+        const header = _createFloatTimelineHeader();
+        const footer = _createFloatTimelineFooter();
 
-        div.appendChild(p);
-        document.body.appendChild(div);
+        // yt-timelines
+        const yt_timelines = document.createElement("div");
+        yt_timelines.id = "yt-timelines";
+        yt_timelines.style.display = "flex";
+        yt_timelines.style.flexDirection = "column";
+        yt_timelines.style.flexGrow = "1";
+        yt_timelines.style.height = "400px";
+        yt_timelines.style.overflowY = "auto";
+
+        panel.appendChild(header);
+        panel.appendChild(yt_timelines);
+        panel.appendChild(footer);
+
+        document.body.appendChild(panel);
     }
 }
 
-function toggleTimelineFloatPanel() {
+function toggleTimelineFloatPanel(isForcedClose) {
+    const _timelimePanelID = "yt-timeline-float-panel";
     const panel = document.getElementById(_timelimePanelID);
-    console.log(panel);
     if (!panel) return;
-    console.log(panel.style.display);
-    if (panel.style.display === "none") {
-        panel.style.display = "block";
-    } else {
+
+    if (isForcedClose || panel.style.display === "flex") {
         panel.style.display = "none";
     }
+    else {
+        panel.style.display = "flex";
+    }
 }
 
 
 
-createTimelineFloatPanel();
-createTimelineAppendButton();
+createFloatTimelinePanel();
+generateTimelineAppendButton();
