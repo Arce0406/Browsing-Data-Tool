@@ -13,7 +13,7 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
 
 
 function main() {
-    createFloatTimelinePanel();
+    generateFloatTimelinePanel();
     generateTimelineAppendButton();
 }
 main();
@@ -30,7 +30,20 @@ function _getStoargeKey() {
 async function readTimelineDataFromStorage() {
     const key = _getStoargeKey();
     const result = await chrome.storage.local.get(key);
-    refershTimelinePanel(result[key]);
+    const data = result[key];
+
+    document.getElementById("timeline-timestamp").value = "";
+    document.getElementById("timeline-title").value = "";
+    document.getElementById("yt-timelines").innerHTML = "";
+
+    if (!data) return;
+    const fragment = document.createDocumentFragment();
+    data.forEach(element => {
+        const item = _createTimelineItme(element.timestamp, element.current, element.title);
+        fragment.appendChild(item);
+    });
+    const parent = document.getElementById("yt-timelines");
+    parent.appendChild(fragment);
 }
 
 async function setTimelineDataToStoarge() {
@@ -45,45 +58,45 @@ async function setTimelineDataToStoarge() {
 /**
  * Player Button & Tooltip
  */
-
-function customButtonToolTip(text, isDisplay) {
-    const div1 = document.createElement("div");
-    div1.setAttribute("aria-live", "polite");
-    div1.setAttribute("data-layer", "4")
-    div1.style.maxWidth = "300px";
-    if (isDisplay) div1.style.display = "block";
-    else div1.style.display = "none";
-    div1.style.top = "0px";
-    div1.style.left = "0px";
-    div1.className = "ytp-tooltip ytp-rounded-tooltip ytp-bottom";
-
-    const div1_1 = document.createElement("div");
-    div1_1.className = "ytp-tooltip-text-wrapper";
-    div1_1.setAttribute("aria-hidden", "true")
-
-    const span = document.createElement("span");
-    span.className = "ytp-tooltip-text ytp-tooltip-text-no-title";
-    // span.style.color = "#eee !important";
-    span.style.setProperty("color", "#eee", "important");
-    span.style.setProperty("font-size", "13px");
-    span.textContent = text;
-
-    // const div1_2 = document.createElement("div");
-    // div1_2.className = "ytp-tooltip-bg";
-
-    // const div1_2_1 = document.createElement("div");
-    // div1_2_1.className = "ytp-tooltip-duration";
-
-    div1_1.appendChild(span);
-    // div1_2.appendChild(div1_2_1);
-    div1.appendChild(div1_1);
-    // div1.appendChild(div1_2);
-    return div1;
-}
-
 function generateTimelineAppendButton() {
+
+    function customButtonToolTip(text, isDisplay) {
+        const div1 = document.createElement("div");
+        div1.setAttribute("aria-live", "polite");
+        div1.setAttribute("data-layer", "4")
+        div1.style.maxWidth = "300px";
+        if (isDisplay) div1.style.display = "block";
+        else div1.style.display = "none";
+        div1.style.top = "0px";
+        div1.style.left = "0px";
+        div1.className = "ytp-tooltip ytp-rounded-tooltip ytp-bottom";
+
+        const div1_1 = document.createElement("div");
+        div1_1.className = "ytp-tooltip-text-wrapper";
+        div1_1.setAttribute("aria-hidden", "true")
+
+        const span = document.createElement("span");
+        span.className = "ytp-tooltip-text ytp-tooltip-text-no-title";
+        // span.style.color = "#eee !important";
+        span.style.setProperty("color", "#eee", "important");
+        span.style.setProperty("font-size", "13px");
+        span.textContent = text;
+
+        // const div1_2 = document.createElement("div");
+        // div1_2.className = "ytp-tooltip-bg";
+
+        // const div1_2_1 = document.createElement("div");
+        // div1_2_1.className = "ytp-tooltip-duration";
+
+        div1_1.appendChild(span);
+        // div1_2.appendChild(div1_2_1);
+        div1.appendChild(div1_1);
+        // div1.appendChild(div1_2);
+        return div1;
+    }
+
     // console.log("createTimelineAppendButton...");
-    const _id = "ytb-timeline-append-button";
+    const _id = "ytb-timeline-panel-control-button";
     if (document.getElementById(_id) === null) {
         const svg_id = "447";
         const ytbTimelineButton = document.createElement("button");
@@ -122,7 +135,7 @@ function generateTimelineAppendButton() {
 }
 
 /**
- * Float Panel
+ * Float Panel & Timeline Item & Timeline ID
  */
 
 function _getTimelimePanelID() {
@@ -197,46 +210,7 @@ function _createTimelineItme(time, currentTime, title) {
     return div;
 }
 
-function _createFloatTimelineHeader() {
-    const header = document.createElement("div");
-    header.id = "yt-timeline-header";
-    header.style.display = "flex";
-    header.style.justifyContent = "center";
-    header.style.alignItems = "center";
-
-    const p = document.createElement("p");
-    p.style.flexGrow = "1";
-    p.style.display = "block";
-    p.style.color = "#363636";
-    p.style.fontSize = "1rem";
-    p.style.fontWeight = "600";
-    p.style.lineHeight = "1.125";
-    p.style.margin = "0";
-    p.style.marginBlockStart = "1em";
-    p.style.marginBlockEnd = "1em";
-    p.style.padding = "0";
-    p.textContent = "時間軸";
-    header.appendChild(p);
-
-    const btn = _createTimelineButton();
-    btn.addEventListener("click", function () {
-        // const str = Array
-        //     .from(_getAllTimelineItmes())
-        //     .map(x => `${x.getAttribute("data-time")} ${x.getAttribute("data-title")}`)
-        //     .join("\r\n");
-        const str = _getAllTimelineItmes()
-            .map(x => `${x["timestamp"]} ${x["title"]}`)
-            .join("\r\n");
-        navigator.clipboard.writeText(str);
-        alert("Timeline has copied.");
-    });
-    btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960" height="16" width="16"><path d="m661 920 117-117v99h30V752H658v30h99L640 899l21 21Zm-481 16q-24.75 0-42.375-17.625T120 876V276q0-24.75 17.625-42.375T180 216h600q24.75 0 42.375 17.625T840 276v329q-14-8-29.5-13t-30.5-8V276H180v600h309q4 16 9.023 31.172Q503.045 922.345 510 936H180Zm0-107v47-600 308-4 249Zm100-53h211q4-16 9-31t13-29H280v60Zm0-170h344q14-7 27-11.5t29-8.5v-40H280v60Zm0-170h400v-60H280v60Zm452.5 579q-77.5 0-132.5-55.5T545 828q0-78.435 54.99-133.718Q654.98 639 733 639q77 0 132.5 55.282Q921 749.565 921 828q0 76-55.5 131.5t-133 55.5Z" /></svg>`;
-    header.appendChild(btn);
-
-    return header;
-}
-
-function _createFloatTimelineFooter() {
+function generateFloatTimelinePanel() {
 
     function _appandTimelineItem(time, currentTime, title) {
         const item = _createTimelineItme(time, currentTime, title);
@@ -244,7 +218,7 @@ function _createFloatTimelineFooter() {
         parent.appendChild(item);
     }
 
-    function input() {
+    function _createInput() {
         const input = document.createElement("input");
         input.type = "text";
         input.style.borderBottomRightRadius = "0";
@@ -266,62 +240,13 @@ function _createFloatTimelineFooter() {
         return input;
     }
 
-    const footer = document.createElement("div");
-    footer.id = "yt-timeline-footer";
-    footer.style.display = "flex";
-    footer.style.alignItems = "center";
-    footer.style.marginBottom = "0.5rem";
-
-    const div = document.createElement("div");
-    div.style.display = "flex";
-    div.style.justifyContent = "flex-start"
-
-    const c1 = document.createElement("p");
-    const tb1 = input();
-    tb1.id = "timeline-timestamp";
-    tb1.size = "4";
-    tb1.style.width = "auto";
-    c1.appendChild(tb1);
-    footer.appendChild(c1);
-
-    const c2 = document.createElement("p");
-    c2.style.flexGrow = "1";
-    const tb2 = input();
-    tb2.id = "timeline-title";
-    tb2.style.width = "97%";
-    tb2.addEventListener("keypress", function (e) {
-        if (e.key != "Enter") return;
-        if (!tb1.value || !tb2.value) return;
-        _appandTimelineItem(tb1.value, tb1.getAttribute("data-current-time"), tb2.value);
-        tb1.value = "";
-        tb2.value = "";
-        setTimelineDataToStoarge();
-    });
-    c2.appendChild(tb2);
-    footer.appendChild(c2);
-
-    const btn = _createTimelineButton();
-    // btn.style.flexGrow = "1";
-    // btn.style.justifyContent = "flex-end";
-    btn.addEventListener("click", function () {
-        if (!tb1.value || !tb2.value) return;
-        _appandTimelineItem(tb1.value, tb1.getAttribute("data-current-time"), tb2.value);
-        tb1.value = "";
-        tb2.value = "";
-        setTimelineDataToStoarge();
-    });
-
-    btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960" height="16" width="16"><path d="M450 856V606H200v-60h250V296h60v250h250v60H510v250h-60Z" /></svg>`;
-    footer.appendChild(btn);
-
-    return footer;
-}
-
-function createFloatTimelinePanel() {
     const _timelimePanelID = _getTimelimePanelID();
     const panel = document.getElementById(_timelimePanelID);
-    if (!panel) {
-        // yt-timeline-float-panel
+    if (panel) {
+        readTimelineDataFromStorage();
+        toggleTimelineFloatPanel(true);
+    } else {
+        // panel - yt-timeline-float-panel
         const panel = document.createElement("div");
         panel.id = _timelimePanelID;
         panel.style.backgroundColor = "white";
@@ -339,8 +264,85 @@ function createFloatTimelinePanel() {
         panel.style.flexDirection = "column";
 
         // header - yt-timeline-buttons
-        const header = _createFloatTimelineHeader();
-        const footer = _createFloatTimelineFooter();
+        const header = document.createElement("div");
+        header.id = "yt-timeline-header";
+        header.style.display = "flex";
+        header.style.justifyContent = "center";
+        header.style.alignItems = "center";
+
+        const p = document.createElement("p");
+        p.style.flexGrow = "1";
+        p.style.display = "block";
+        p.style.color = "#363636";
+        p.style.fontSize = "1rem";
+        p.style.fontWeight = "600";
+        p.style.lineHeight = "1.125";
+        p.style.margin = "0";
+        p.style.marginBlockStart = "1em";
+        p.style.marginBlockEnd = "1em";
+        p.style.padding = "0";
+        p.textContent = "時間軸";
+        header.appendChild(p);
+
+        const btn_export = _createTimelineButton();
+        btn_export.id = "yt-timeline-btn-export";
+        btn_export.addEventListener("click", function () {
+            const str = _getAllTimelineItmes()
+                .map(x => `${x["timestamp"]} ${x["title"]}`)
+                .join("\r\n");
+            navigator.clipboard.writeText(str);
+            alert("Timeline has copied.");
+        });
+        btn_export.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960" height="16" width="16"><path d="m661 920 117-117v99h30V752H658v30h99L640 899l21 21Zm-481 16q-24.75 0-42.375-17.625T120 876V276q0-24.75 17.625-42.375T180 216h600q24.75 0 42.375 17.625T840 276v329q-14-8-29.5-13t-30.5-8V276H180v600h309q4 16 9.023 31.172Q503.045 922.345 510 936H180Zm0-107v47-600 308-4 249Zm100-53h211q4-16 9-31t13-29H280v60Zm0-170h344q14-7 27-11.5t29-8.5v-40H280v60Zm0-170h400v-60H280v60Zm452.5 579q-77.5 0-132.5-55.5T545 828q0-78.435 54.99-133.718Q654.98 639 733 639q77 0 132.5 55.282Q921 749.565 921 828q0 76-55.5 131.5t-133 55.5Z" /></svg>`;
+        header.appendChild(btn_export);
+
+        // footer - yt-timeline-footer
+        const footer = document.createElement("div");
+        footer.id = "yt-timeline-footer";
+        footer.style.display = "flex";
+        footer.style.alignItems = "center";
+        footer.style.marginBottom = "0.5rem";
+
+        const div = document.createElement("div");
+        div.style.display = "flex";
+        div.style.justifyContent = "flex-start"
+
+        const c1 = document.createElement("p");
+        const tb1 = _createInput();
+        tb1.id = "timeline-timestamp";
+        tb1.size = "4";
+        tb1.style.width = "auto";
+        c1.appendChild(tb1);
+        footer.appendChild(c1);
+
+        const c2 = document.createElement("p");
+        c2.style.flexGrow = "1";
+        const tb2 = _createInput();
+        tb2.id = "timeline-title";
+        tb2.style.width = "97%";
+        tb2.addEventListener("keypress", function (e) {
+            if (e.key != "Enter") return;
+            if (!tb1.value || !tb2.value) return;
+            _appandTimelineItem(tb1.value, tb1.getAttribute("data-current-time"), tb2.value);
+            tb1.value = "";
+            tb2.value = "";
+            setTimelineDataToStoarge();
+        });
+        c2.appendChild(tb2);
+        footer.appendChild(c2);
+
+        const btn_append = _createTimelineButton();
+        btn_append.id = "yt-timeline-btn-append";
+        btn_append.addEventListener("click", function () {
+            if (!tb1.value || !tb2.value) return;
+            _appandTimelineItem(tb1.value, tb1.getAttribute("data-current-time"), tb2.value);
+            tb1.value = "";
+            tb2.value = "";
+            setTimelineDataToStoarge();
+        });
+
+        btn_append.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960" height="16" width="16"><path d="M450 856V606H200v-60h250V296h60v250h250v60H510v250h-60Z" /></svg>`;
+        footer.appendChild(btn_append);
 
         // yt-timelines
         const yt_timelines = document.createElement("div");
@@ -358,25 +360,7 @@ function createFloatTimelinePanel() {
         document.body.appendChild(panel);
 
         readTimelineDataFromStorage();
-    } else {
-        readTimelineDataFromStorage();
-        toggleTimelineFloatPanel(true);
     }
-}
-
-function refershTimelinePanel(data) {
-    document.getElementById("timeline-timestamp").value = "";
-    document.getElementById("timeline-title").value = "";
-    document.getElementById("yt-timelines").innerHTML = "";
-
-    if (!data) return;
-    const fragment = document.createDocumentFragment();
-    data.forEach(element => {
-        const item = _createTimelineItme(element.timestamp, element.current, element.title);
-        fragment.appendChild(item);
-    });
-    const parent = document.getElementById("yt-timelines");
-    parent.appendChild(fragment);
 }
 
 function toggleTimelineFloatPanel(isForcedClose) {
