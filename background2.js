@@ -48,6 +48,14 @@ chrome.commands.onCommand.addListener(async (command, tab) => {
     const response = await chrome.tabs.sendMessage(tab.id, { command: "screenshot" });
     // console.log(response);
   }
+  else if (command === "youtube-timeline") {
+    if (!Utils.isYoutube(tab.url)) {
+      Utils.normalNotification(Utils._app_title, "截圖功能僅能在 Youtube 頁面上執行。", "");
+      return;
+    }
+    const response = await chrome.tabs.sendMessage(tab.id, { command: "timeline" });
+    // console.log(response);
+  }
 });
 
 /**

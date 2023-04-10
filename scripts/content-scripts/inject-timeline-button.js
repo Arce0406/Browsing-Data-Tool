@@ -4,32 +4,48 @@
 chrome.runtime.onMessage.addListener(async function (request, sender, sendResponse) {
     // console.log(sender.tab ? "from a content script:" + sender.tab.url : "from the extension", request.command);
     if (request.command === "timeline") {
-        readData();
-        toggleTimelineFloatPanel(false);      
+        main();
         const result = ""; // await screenshot();
-        sendResponse({ result: result });
-        return true;
-    }
-    else if (request.command === "update") {
-        // 如果頁面連結有變化，則需要重整 timeline 資料        
-        readData();
-        toggleTimelineFloatPanel(true);     
-        const result = ""; // await screenshot();   
         sendResponse({ result: result });
         return true;
     }
 });
 
-function readData(){
 
+function main() {
+    createFloatTimelinePanel();
+    generateTimelineAppendButton();
+}
+main();
+
+/**
+ * Storage Data
+ */
+
+function _getStoargeKey() {
+    const urlParams = new URLSearchParams(window.location.search);
+    return `honeybeesclub_youtube_timeline_${urlParams.get("v")}`;
+}
+
+async function readTimelineDataFromStorage() {
+    const key = _getStoargeKey();
+    const result = await chrome.storage.local.get(key);
+    refershTimelinePanel(result[key]);
+}
+
+async function setTimelineDataToStoarge() {
+    const obj = {};
+    const key = _getStoargeKey();
+    const data = _getAllTimelineItmes();
+    obj[key] = data;
+    const r = await chrome.storage.local.set(obj);
+    return r;
 }
 
 /**
- * Create button tooltip
- * @param {String} text 
- * @param {Boolean} isDisplay 
- * @returns 
+ * Player Button & Tooltip
  */
+
 function customButtonToolTip(text, isDisplay) {
     const div1 = document.createElement("div");
     div1.setAttribute("aria-live", "polite");
@@ -83,13 +99,13 @@ function generateTimelineAppendButton() {
         ytpRightControls.insertBefore(ytbTimelineButton, ytpRightControls.childNodes[1]);
 
         const tooltip = customButtonToolTip("時間軸 (Ctrl + ↑ )", true);
-        // document.body.appendChild(div1);
         const btn = document.getElementById(_id);
         btn.addEventListener("click", async (e) => {
             const v = document.querySelector(".video-stream.html5-main-video");
-            // const url = window.location.href;
-            const currentTime = new Date(v.currentTime * 1000).toISOString().substring(11, 19)
-            document.getElementById("timeline-timestamp").value = currentTime;
+            const currentTime = v.currentTime;
+            const input_timestamp = document.getElementById("timeline-timestamp");
+            input_timestamp.value = new Date(currentTime * 1000).toISOString().substring(11, 19);
+            input_timestamp.setAttribute("data-current-time", currentTime);
             toggleTimelineFloatPanel();
         });
         btn.addEventListener("mouseover", function (e) {
@@ -106,8 +122,19 @@ function generateTimelineAppendButton() {
 }
 
 /**
- * 
+ * Float Panel
  */
+
+function _getTimelimePanelID() {
+    return "yt-timeline-float-panel";
+}
+
+function _getAllTimelineItmes() {
+    return Array
+        .from((document.querySelectorAll("#yt-timelines .yt-timeline") || []))
+        .map(x => ({ "timestamp": x.getAttribute("data-time"), "title": x.getAttribute("data-title"), "current": x.getAttribute("data-current-time") }));
+    // .map(x => `${x.getAttribute("data-time")} ${x.getAttribute("data-title")}`)    
+}
 
 function _createTimelineButton() {
     const btn = document.createElement("button");
@@ -126,16 +153,18 @@ function _createTimelineButton() {
     return btn;
 }
 
-function _createTimelineItme(time, title) {
+function _createTimelineItme(time, currentTime, title) {
     const div = document.createElement("div");
     div.className = "yt-timeline";
     div.setAttribute("data-time", time);
+    div.setAttribute("data-current-time", currentTime);
     div.setAttribute("data-title", title);
     div.style.display = "flex";
     div.style.alignItems = "center";
 
     const a = document.createElement("a");
-    a.href = "#";
+    const urlParams = new URLSearchParams(window.location.search);
+    a.href = `https://youtu.be/${urlParams.get("v")}?t=${Math.floor(currentTime)}`;
     a.textContent = time;
 
     const p = document.createElement("p");
@@ -154,7 +183,10 @@ function _createTimelineItme(time, title) {
     btn.style.marginBottom = "0.5rem";
     btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960" height="16" width="16"><path d="M261 936q-24.75 0-42.375-17.625T201 876V306h-41v-60h188v-30h264v30h188v60h-41v570q0 24-18 42t-42 18H261Zm438-630H261v570h438V306ZM367 790h60V391h-60v399Zm166 0h60V391h-60v399ZM261 306v570-570Z" /></svg>`;
     btn.addEventListener("click", function () {
-        if (confirm("確定要刪除此項timestamp?")) document.getElementById("yt-timelines").removeChild(div);
+        if (confirm("確定要刪除此項 timestamp ? (刪除後將無法復原)")) {
+            document.getElementById("yt-timelines").removeChild(div);
+            setTimelineDataToStoarge();
+        }
     });
 
     btn_wrapper.appendChild(btn);
@@ -188,9 +220,12 @@ function _createFloatTimelineHeader() {
 
     const btn = _createTimelineButton();
     btn.addEventListener("click", function () {
-        const str = Array
-            .from((document.querySelectorAll("#yt-timelines .yt-timeline") || []))
-            .map(x => `${x.getAttribute("data-time")} ${x.getAttribute("data-title")}`)
+        // const str = Array
+        //     .from(_getAllTimelineItmes())
+        //     .map(x => `${x.getAttribute("data-time")} ${x.getAttribute("data-title")}`)
+        //     .join("\r\n");
+        const str = _getAllTimelineItmes()
+            .map(x => `${x["timestamp"]} ${x["title"]}`)
             .join("\r\n");
         navigator.clipboard.writeText(str);
         alert("Timeline has copied.");
@@ -202,6 +237,12 @@ function _createFloatTimelineHeader() {
 }
 
 function _createFloatTimelineFooter() {
+
+    function _appandTimelineItem(time, currentTime, title) {
+        const item = _createTimelineItme(time, currentTime, title);
+        const parent = document.getElementById("yt-timelines");
+        parent.appendChild(item);
+    }
 
     function input() {
         const input = document.createElement("input");
@@ -248,6 +289,14 @@ function _createFloatTimelineFooter() {
     const tb2 = input();
     tb2.id = "timeline-title";
     tb2.style.width = "97%";
+    tb2.addEventListener("keypress", function (e) {
+        if (e.key != "Enter") return;
+        if (!tb1.value || !tb2.value) return;
+        _appandTimelineItem(tb1.value, tb1.getAttribute("data-current-time"), tb2.value);
+        tb1.value = "";
+        tb2.value = "";
+        setTimelineDataToStoarge();
+    });
     c2.appendChild(tb2);
     footer.appendChild(c2);
 
@@ -256,11 +305,10 @@ function _createFloatTimelineFooter() {
     // btn.style.justifyContent = "flex-end";
     btn.addEventListener("click", function () {
         if (!tb1.value || !tb2.value) return;
-        const item = _createTimelineItme(tb1.value, tb2.value);
-        const parent = document.getElementById("yt-timelines");
-        parent.appendChild(item);
+        _appandTimelineItem(tb1.value, tb1.getAttribute("data-current-time"), tb2.value);
         tb1.value = "";
         tb2.value = "";
+        setTimelineDataToStoarge();
     });
 
     btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 96 960 960" height="16" width="16"><path d="M450 856V606H200v-60h250V296h60v250h250v60H510v250h-60Z" /></svg>`;
@@ -270,7 +318,7 @@ function _createFloatTimelineFooter() {
 }
 
 function createFloatTimelinePanel() {
-    const _timelimePanelID = "yt-timeline-float-panel";
+    const _timelimePanelID = _getTimelimePanelID();
     const panel = document.getElementById(_timelimePanelID);
     if (!panel) {
         // yt-timeline-float-panel
@@ -308,11 +356,31 @@ function createFloatTimelinePanel() {
         panel.appendChild(footer);
 
         document.body.appendChild(panel);
+
+        readTimelineDataFromStorage();
+    } else {
+        readTimelineDataFromStorage();
+        toggleTimelineFloatPanel(true);
     }
 }
 
+function refershTimelinePanel(data) {
+    document.getElementById("timeline-timestamp").value = "";
+    document.getElementById("timeline-title").value = "";
+    document.getElementById("yt-timelines").innerHTML = "";
+
+    if (!data) return;
+    const fragment = document.createDocumentFragment();
+    data.forEach(element => {
+        const item = _createTimelineItme(element.timestamp, element.current, element.title);
+        fragment.appendChild(item);
+    });
+    const parent = document.getElementById("yt-timelines");
+    parent.appendChild(fragment);
+}
+
 function toggleTimelineFloatPanel(isForcedClose) {
-    const _timelimePanelID = "yt-timeline-float-panel";
+    const _timelimePanelID = _getTimelimePanelID();
     const panel = document.getElementById(_timelimePanelID);
     if (!panel) return;
 
@@ -323,8 +391,3 @@ function toggleTimelineFloatPanel(isForcedClose) {
         panel.style.display = "flex";
     }
 }
-
-
-
-createFloatTimelinePanel();
-generateTimelineAppendButton();
