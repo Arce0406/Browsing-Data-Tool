@@ -61,9 +61,10 @@ async function remove(payload) {
 async function clear() {
     const empty = {};
     empty[_key_youtube_screenshot] = [];
-    // const result = await FileSysten.clear();
-    await set(empty);
-    return result;
+    // const result = await FileSysten.clear();    
+    // await set(empty);
+    await FileSysten.set(empty);
+    // return result;    
 }
 
 export { _key_youtube_screenshot as key, init, usage, set, get, download, remove, clear }

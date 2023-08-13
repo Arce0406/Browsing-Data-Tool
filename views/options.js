@@ -41,6 +41,7 @@ async function getScreenshots() {
     storageData = storageData[ScreenshotStorage.key];
     usageBytes = await ScreenshotStorage.usage();
     if (storageData) storageData = storageData.reverse();
+    console.log(storageData);
 }
 
 async function getUserSettings() {
@@ -114,6 +115,7 @@ async function onPreview(element, dataURL) {
 
 // Item Clone
 function createItem(payload) {
+    console.log(payload);
     const date = payload.created.substring(0, 10);
     const ce = document.querySelector(".sample_item_3").cloneNode(true);
     ce.classList.remove("sample_item_3");
@@ -167,6 +169,7 @@ function createItem(payload) {
 // Create ui
 function screenshots() {
     const length = storageData.length;
+    console.log(length);
 
     if (!storageData || length <= 0) {
         hint_text.textContent = "No data.";

@@ -3,6 +3,12 @@ import * as Utils from "./scripts/utils.js";
 import * as ScreenshotFiles from "./scripts/screenshotStorage.js"
 import * as UserSettingStorage from "./scripts/settingStorage.js";
 
+// 每次重新執行都要檢查一次個人化設定
+async function init() {
+  await UserSettingStorage.init()
+}
+init();
+
 /**
  * Click extension icon to open option page.
  */
